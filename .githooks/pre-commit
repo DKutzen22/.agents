@@ -1,0 +1,194 @@
+#!/bin/sh
+# .githooks/pre-commit — Validates staged files against repository governance spec
+set -e
+
+# Collect staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
+
+FAILED=0
+
+# Check 1: state/handoff.md line cap (max 50 lines)
+if echo "$STAGED_FILES" | grep -q '^state/handoff\.md$'; then
+    LINE_COUNT=$(wc -l < state/handoff.md)
+    if [ "$LINE_COUNT" -gt 50 ]; then
+        echo "❌ [PRE-COMMIT] state/handoff.md exceeds 50 lines ($LINE_COUNT lines). Condense before committing."
+        FAILED=1
+    fi
+fi
+
+# Check 2: skills/ directory structure
+for file in $STAGED_FILES; do
+    case "$file" in
+        skills/*/SKILL.md)
+            if [ ! -f "$file" ] || ! head -n 1 "$file" | grep -q '^---'; then
+                echo "❌ [PRE-COMMIT] $file must start with YAML frontmatter ('---')."
+                FAILED=1
+            fi
+            ;;
+        skills/*/*)
+            ;;
+        skills/*.md)
+            if [ "$file" != "skills/README.md" ]; then
+                echo "❌ [PRE-COMMIT] Loose file in skills/ root: $file. Skills must reside in skills/<name>/SKILL.md."
+                FAILED=1
+            fi
+            ;;
+    esac
+done
+
+# Check 3: rules/ frontmatter & size
+for file in $STAGED_FILES; do
+    case "$file" in
+        rules/*.md)
+            if [ "$file" = "rules/README.md" ]; then
+                continue
+            fi
+            # Check for globs: in frontmatter
+            if ! grep -q '^globs:' "$file"; then
+                echo "❌ [PRE-COMMIT] $file missing 'globs:' in YAML frontmatter."
+                FAILED=1
+            fi
+            # Check line length (allow grandfathered legacy rules)
+            RULE_LINES=$(wc -l < "$file")
+            case "$file" in
+                rules/bioinformatics-data-integrity.md|rules/shiny-and-sqlite.md|rules/snakemake-conventions.md)
+                    # Grandfathered rules
+                    ;;
+                *)
+                    if [ "$RULE_LINES" -gt 60 ]; then
+                        echo "❌ [PRE-COMMIT] $file exceeds 60 lines ($RULE_LINES lines). Move detailed playbooks to skills/ or quirks to memory/."
+                        FAILED=1
+                    fi
+                    ;;
+            esac
+            ;;
+    esac
+done
+
+# Check 4: context/ declarative lint (banning imperative agent directives)
+for file in $STAGED_FILES; do
+    case "$file" in
+        context/*.md)
+            if [ "$file" = "context/README.md" ] || [ "$file" = "context/repo-governance-spec.md" ]; then
+                continue
+            fi
+            if grep -inE '(You must|Always run|Never allow|Step [0-9]:)' "$file" > /dev/null 2>&1; then
+                echo "⚠️ [PRE-COMMIT LINT] $file contains imperative agent instructions. context/ must be passive reference data."
+                grep -inE '(You must|Always run|Never allow|Step [0-9]:)' "$file" || true
+                FAILED=1
+            fi
+            ;;
+    esac
+done
+
+# Check 5: context/ protection (guard against unintended specification changes)
+CONTEXT_EDITS=$(echo "$STAGED_FILES" | grep '^context/' | grep -v 'context/README.md' || true)
+if [ -n "$CONTEXT_EDITS" ]; then
+    COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+    SPEC_APPROVED=0
+    if [ -f "$COMMIT_MSG_FILE" ] && grep -qiE '(\[spec-update\]|spec:)' "$COMMIT_MSG_FILE"; then
+        SPEC_APPROVED=1
+    fi
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+    if echo "$CURRENT_BRANCH" | grep -qiE 'spec|schema'; then
+        SPEC_APPROVED=1
+    fi
+    if [ "${SPEC_UPDATE:-0}" = "1" ]; then
+        SPEC_APPROVED=1
+    fi
+    if [ "$SPEC_APPROVED" -eq 0 ]; then
+        echo "🔒 [PRE-COMMIT] Modifying context/ requires explicit intent."
+        echo "   Staged context files:"
+        echo "$CONTEXT_EDITS" | sed 's/^/   - /'
+        echo "   To commit spec updates, include '[spec-update]' in commit message or use: git commit --no-verify"
+        FAILED=1
+    fi
+fi
+
+# Check 6: Secret & HPC Path Scan
+STAGED_DIFF_ADDS=$(git diff --cached -U0 | grep '^\+[^+]' || true)
+if [ -n "$STAGED_DIFF_ADDS" ]; then
+    # Scan for NCBI_API_KEY
+    if echo "$STAGED_DIFF_ADDS" | grep -iE 'NCBI_API_KEY\s*[:=]\s*["'\'']?[A-Za-z0-9_]{10,}' > /dev/null 2>&1; then
+        echo "🚨 [SECURITY] Hardcoded NCBI_API_KEY detected in staged changes."
+        FAILED=1
+    fi
+
+    # Scan for private SSH/crypto keys
+    if echo "$STAGED_DIFF_ADDS" | grep -iE 'BEGIN [A-Z0-9_-]+ PRIVATE KEY' > /dev/null 2>&1; then
+        echo "🚨 [SECURITY] Private key detected in staged changes."
+        FAILED=1
+    fi
+
+    # Scan for user scratch paths (/scratch/<user>, /lustre/...) unless tagged # allow-path
+    SUSPICIOUS_PATHS=$(echo "$STAGED_DIFF_ADDS" | grep -E '(/scratch/[a-zA-Z0-9_.-]+|/lustre/[a-zA-Z0-9_.-]+)' | grep -v -E '(# allow-path|Ban internal|Bans hardcoded|Blocks commits|Never write|Scan for)' || true)
+    if [ -n "$SUSPICIOUS_PATHS" ]; then
+        # Check if the change is only in context/hpc-and-env-profiles.md
+        NON_HPC_DOCS=$(echo "$STAGED_FILES" | grep -v 'context/hpc-and-env-profiles.md' || true)
+        if [ -n "$NON_HPC_DOCS" ]; then
+            echo "⚠️ [SECURITY] Hardcoded user scratch/lustre path detected in staged changes:"
+            echo "$SUSPICIOUS_PATHS"
+            echo "   Use config.yaml parameters or append '# allow-path' to override."
+            FAILED=1
+        fi
+    fi
+fi
+
+# Check 7: scripts/ Syntax & Permissions
+for file in $STAGED_FILES; do
+    case "$file" in
+        scripts/*.sh)
+            if [ -f "$file" ]; then
+                if [ ! -x "$file" ]; then
+                    echo "❌ [PRE-COMMIT] $file is not executable. Run: chmod +x $file"
+                    FAILED=1
+                fi
+                if ! sh -n "$file"; then
+                    echo "❌ [PRE-COMMIT] $file failed shell syntax check (sh -n)."
+                    FAILED=1
+                fi
+            fi
+            ;;
+        scripts/*.py)
+            if [ -f "$file" ]; then
+                if [ ! -x "$file" ]; then
+                    echo "❌ [PRE-COMMIT] $file is not executable. Run: chmod +x $file"
+                    FAILED=1
+                fi
+                if ! python3 -m py_compile "$file" > /dev/null 2>&1; then
+                    echo "❌ [PRE-COMMIT] $file failed python compilation check."
+                    FAILED=1
+                fi
+            fi
+            ;;
+    esac
+done
+
+# Check 8: No Top-Level commands/ Drift
+COMMANDS_FILES=$(echo "$STAGED_FILES" | grep '^commands/' || true)
+if [ -n "$COMMANDS_FILES" ]; then
+    echo "❌ [PRE-COMMIT] Stray files detected in commands/: $COMMANDS_FILES"
+    echo "   The commands/ directory is deprecated. Workflows must live in skills/<name>/SKILL.md."
+    FAILED=1
+fi
+
+# Check 9: Absolute Path Scanner (/Users/, /home/, C:\)
+if [ -n "$STAGED_DIFF_ADDS" ]; then
+    ABSOLUTE_PATHS=$(echo "$STAGED_DIFF_ADDS" | grep -E '(/Users/[a-zA-Z0-9_.-]+|/home/[a-zA-Z0-9_.-]+|[A-Za-z]:\\[a-zA-Z0-9_.-]+)' | grep -v -E '(# allow-path|Never write|Bans hardcoded|Ban all|Replaced all|Scan for)' || true)
+    if [ -n "$ABSOLUTE_PATHS" ]; then
+        echo "🚨 [SECURITY] Hardcoded machine-specific absolute path detected in staged changes:"
+        echo "$ABSOLUTE_PATHS"
+        echo "   Use repo-relative paths (e.g., .agents/state/handoff.md) or append '# allow-path' to override."
+        FAILED=1
+    fi
+fi
+
+if [ "$FAILED" -ne 0 ]; then
+    echo "🚨 Pre-commit checks failed. Address the issues above or consult context/repo-governance-spec.md."
+    exit 1
+fi
+
+exit 0
