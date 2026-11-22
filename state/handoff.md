@@ -1,7 +1,7 @@
 # Session Handoff State
 
 ## Active Repo & Branch
-* **Repo:** `.agents`
+* **Repo:** Synapse (`.agents`)
 * **Branch:** `main`
 * **Last Updated:** 2026-11-21 17:08
 

@@ -1,12 +1,12 @@
 #!/bin/sh
-# scripts/unlink-repo.sh — Safely tears down .agents symlinks in a target repository
+# scripts/unlink-repo.sh — Safely tears down Synapse (.agents) symlinks in a target repository
 set -eu
 
 usage() {
     cat << 'EOF'
 Usage: unlink-repo.sh [OPTIONS] <TARGET_REPO_DIR>
 
-Tears down the central .agents symlink mount inside a target project repository,
+Tears down the central Synapse (.agents) symlink mount inside a target project repository,
 removing shared symlinks and cleaning up .git/info/exclude while strictly
 preserving all repo-local state/, memory/, and local-rules/ files.
 

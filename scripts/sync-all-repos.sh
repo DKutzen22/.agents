@@ -1,12 +1,12 @@
 #!/bin/sh
-# scripts/sync-all-repos.sh — Audits or refreshes .agents mounts across all registered repositories
+# scripts/sync-all-repos.sh — Audits or refreshes Synapse (.agents) mounts across all registered repositories
 set -eu
 
 usage() {
     cat << 'EOF'
 Usage: sync-all-repos.sh [OPTIONS]
 
-Audits or refreshes the central .agents mount across all registered repositories.
+Audits or refreshes the central Synapse (.agents) mount across all registered repositories.
 Repositories are registered in a user-local registry file.
 
 Options:

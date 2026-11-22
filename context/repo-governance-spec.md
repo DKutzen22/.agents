@@ -1,6 +1,6 @@
-# Repository Governance Specification
+# Synapse Repository Governance Specification
 
-This document provides the formal structural and operational specification for the `.agents`
+This document provides the formal structural and operational specification for the Synapse (`.agents`)
 repository. It serves as the single source of truth for repository layout, lifecycle contracts,
 frontmatter schemas, and symlinking topology across all integrated tech stacks.
 

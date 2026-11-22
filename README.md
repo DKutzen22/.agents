@@ -1,4 +1,4 @@
-# .agents — Centralized AI Coding Configurations
+# Synapse — Centralized Multi-Agent Engineering Framework
 
 Standardized rules, skills, subagents, technical specifications, and zero-dependency scripts for AI-assisted development across three specialized bioinformatics stacks:
 
@@ -10,9 +10,9 @@ Standardized rules, skills, subagents, technical specifications, and zero-depend
 
 ---
 
-## What is This Repository?
+## What is Synapse?
 
-This repository acts as a **centralized brain** for agentic AI coding assistants (Google Antigravity, Claude Code, Cursor, Codex). Instead of repeatedly writing AI rules, database schemas, and prompt instructions inside every separate phage pipeline, R package, or Quarto project, you mount this single repository into your active projects. 
+Synapse acts as a **centralized brain** for agentic AI coding assistants (Google Antigravity, Claude Code, Cursor, Codex). Instead of repeatedly writing AI rules, database schemas, and prompt instructions inside every separate phage pipeline, R package, or Quarto project, you mount Synapse into your active projects. 
 
 Any AI agent working in a mounted repository automatically adopts your coding standards, obeys database schemas, avoids known bioinformatics edge cases, and provides standardized slash workflows (`/resume`, `/handoff`, `/janitor`).
 
@@ -24,7 +24,7 @@ This repository is distributed for public, team, and multi-agent usage via APM (
 
 ### Option 1: Install via APM (Recommended for Teams & Multi-Tool Environments)
 
-Using Microsoft's **APM (Agent Package Manager)**, you can install this package into any repository and compile configurations directly to your target harnesses (Claude Code, Cursor, GitHub Copilot):
+Using Microsoft's **APM (Agent Package Manager)**, you can install Synapse into any repository and compile configurations directly to your target harnesses (Claude Code, Cursor, GitHub Copilot):
 
 ```bash
 # Install directly from GitHub into your active project:
@@ -34,7 +34,7 @@ apm install github:dkutzen22/.agents
 apm install dkutzen22/synapse
 ```
 
-To declare `.agents` as a versioned dependency in your consumer project's `apm.yml`:
+To declare Synapse as a versioned dependency in your consumer project's `apm.yml`:
 
 ```yaml
 # In your target project's apm.yml
@@ -69,10 +69,10 @@ For local multi-repo development or offline HPC clusters without APM:
 
 ```bash
 # 1. Clone this repository centrally (if not already local)
-git clone https://github.com/DKutzen22/.agents.git ~/.agents-central
+git clone https://github.com/DKutzen22/.agents.git ~/.synapse-central
 
 # 2. Activate the pre-commit governance & security hook in this repository
-cd ~/.agents-central
+cd ~/.synapse-central
 git config core.hooksPath .githooks
 
 # 3. Mount into your target bioinformatics or R project repository
@@ -134,7 +134,7 @@ The repository is organized into 7 canonical directories. Formal lifecycle speci
 ### 2. `skills/` (Domain Playbooks & Workflows)
 *Maintainer Guide: [`skills/README.md`](skills/README.md) | Trigger: Intent match or explicit `/<name>`*
 * **Domain Playbooks:**
-  - **[`scaffold-domain`](skills/scaffold-domain/SKILL.md):** Guided workflow for expanding `.agents` safely with new languages, tools, rules, and context specifications.
+  - **[`scaffold-domain`](skills/scaffold-domain/SKILL.md):** Guided workflow for expanding Synapse safely with new languages, tools, rules, and context specifications.
   - **[`promote-memory`](skills/promote-memory/SKILL.md):** Periodic harvesting protocol for promoting empirical project quirks and decisions into central memory or rules.
   - **[`python-packaging-and-cli`](skills/python-packaging-and-cli/SKILL.md):** Modern `src/` layout packaging, `pyproject.toml` metadata, `argparse`/`typer` CLI entrypoints, and `pytest` suites.
   - **[`docker-and-reproducibility`](skills/docker-and-reproducibility/SKILL.md):** Multi-stage Dockerfiles, Apptainer/Singularity `.def` recipes for SLURM/HPC, and pinned lockfile environments.
@@ -175,18 +175,19 @@ The repository is organized into 7 canonical directories. Formal lifecycle speci
 
 ### 7. `scripts/` (Zero-Dependency CLI Utilities)
 *Maintainer Guide: [`scripts/README.md`](scripts/README.md) | Standard: POSIX `sh` or Python 3 stdlib only*
-* **[`link-repo.sh`](scripts/link-repo.sh):** Executable shell script mounting `.agents` into consumer repositories, creating portability symlinks, and generating IDE pointer entrypoints.
+* **[`link-repo.sh`](scripts/link-repo.sh):** Executable shell script mounting Synapse into consumer repositories, creating portability symlinks, and generating IDE pointer entrypoints.
 * **[`unlink-repo.sh`](scripts/unlink-repo.sh):** Clean teardown utility removing shared symlinks and `.git/info/exclude` blocks while preserving repo-local state, memory, and local-rules.
 * **[`sync-all-repos.sh`](scripts/sync-all-repos.sh):** Fleet management script auditing (`--check`) or updating (`--refresh`) all registered consumer repositories listed in `${XDG_CONFIG_HOME:-$HOME/.config}/agents/linked-repos.txt`.
 * **[`hook-handler.py`](scripts/hook-handler.py):** Antigravity lifecycle hook runner enforcing real-time spec protection (`PreToolUse`), handoff line caps, and script syntax verification (`PostToolUse`).
 * **[`validate-gbk-sqlite.py`](scripts/validate-gbk-sqlite.py):** Verifies SQLite databases against canonical DDL, checking foreign keys, column presence, and sentinels.
 * **[`check-links.py`](scripts/check-links.py):** Scans Markdown and HTML files to verify that all relative local links and image assets exist on disk.
+* **[`package-synapse.sh`](scripts/package-synapse.sh):** Cleans caches, asserts `apm.yml` schema, and builds `.zip` release distribution.
 
 ---
 
-## Mounting into Target Repositories
+## Mounting Synapse into Target Repositories
 
-To standardize AI workflows across your phage bioinformatics pipelines, R packages, or Quarto publishing sites, run [`scripts/link-repo.sh`](scripts/link-repo.sh):
+To standardize AI workflows across your phage bioinformatics pipelines, R packages, or Quarto publishing sites, run [`scripts/link-repo.sh`](scripts/link-repo.sh) to mount Synapse:
 
 ```bash
 ./scripts/link-repo.sh /path/to/target-repo
@@ -245,7 +246,7 @@ cp mcp.json.template mcp.json
 
 ## Continuous Integration Self-Testing
 
-The central `.agents` architecture is automatically validated via GitHub Actions in [`.github/workflows/validate-agents.yml`](.github/workflows/validate-agents.yml) on every push and pull request to `main`:
+The central Synapse architecture is automatically validated via GitHub Actions in [`.github/workflows/validate-synapse.yml`](.github/workflows/validate-synapse.yml) on every push and pull request to `main`:
 1. **JSON & Manifest Parsing:** Validates `hooks.json`, `agents.json`, `rules.json`, `skills.json`, and `mcp.json.template` with `python3 -m json.tool`.
 2. **Full Repository Governance:** Executes `.githooks/pre-commit --all` to audit frontmatter, line limits, and verify zero machine-specific absolute paths.
 3. **Cross-Link Integrity:** Runs `scripts/check-links.py` to assert zero broken internal file references.
@@ -260,7 +261,7 @@ This repository provides reproducible build scripts and continuous integration f
 
 * **APM Manifest (`apm.yml`):** Specifies package metadata (`dkutzen22/synapse`), version (`1.0.0`), primitive directories, and target harnesses.
 * **Line Ending Governance (`.gitattributes`):** Normalizes all text files to LF line endings (`eol=lf`) and marks binary/archive formats explicitly.
-* **Build Command (`make package`):** Cleans transient caches and calls [`scripts/package-agent.sh`](scripts/package-agent.sh) to assemble `dist/synapse-v<version>.zip` and calculate its SHA-256 checksum.
+* **Build Command (`make package`):** Cleans transient caches and calls [`scripts/package-synapse.sh`](scripts/package-synapse.sh) to assemble `dist/synapse-v<version>.zip` and calculate its SHA-256 checksum.
 * **Tag-Triggered CI/CD ([`.github/workflows/release.yml`](.github/workflows/release.yml)):** Automatically runs on semantic git tags (`v*.*.*`), validates `apm.yml`, executes pre-commit governance, compiles the distribution zip, and publishes a GitHub Release.
 
 ---

@@ -1,4 +1,4 @@
-# Scripts Directory Guide (for Maintainers)
+# Synapse Scripts Directory Guide (for Maintainers)
 
 This directory houses zero-dependency repository management, verification, and setup
 utilities invoked by skills, automated workflows, and Git hooks.
@@ -11,7 +11,7 @@ utilities invoked by skills, automated workflows, and Git hooks.
   - Antigravity lifecycle hook runner (`scripts/hook-handler.py`)
   - Database schema & sentinel verification (`scripts/validate-gbk-sqlite.py`)
   - Documentation & asset relative link auditing (`scripts/check-links.py`)
-  - APM distribution packaging & archive generation (`scripts/package-agent.sh`)
+  - Synapse APM distribution packaging & archive generation (`scripts/package-synapse.sh`)
 * **Doesn't Belong:** Project-specific bioinformatics analysis pipelines, Snakemake execution logic, or Shiny server code (those belong in their respective consumer repositories).
 
 ## Zero-Dependency Contract

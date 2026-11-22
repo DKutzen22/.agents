@@ -1,4 +1,4 @@
-name: Validate .agents Architecture
+name: Validate Synapse Architecture
 
 on:
   push:

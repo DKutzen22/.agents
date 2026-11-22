@@ -8,7 +8,7 @@ description: >
 
 # /promote-memory
 
-Hygiene workflow for harvesting empirical tool quirks and architectural patterns from linked repositories (`PHANTOM`, `Pharos`, `kutzen.org`) into the central `.agents` knowledge base.
+Hygiene workflow for harvesting empirical tool quirks and architectural patterns from linked repositories (`PHANTOM`, `Pharos`, `kutzen.org`) into the central Synapse knowledge base.
 
 ## Execution Steps
 

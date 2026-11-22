@@ -3,14 +3,14 @@
 all: help
 
 help:
-	@echo "Available make targets for .agents:"
-	@echo "  make package   - Clean caches, validate apm.yml, and pack zip archive for APM release"
+	@echo "Available make targets for Synapse:"
+	@echo "  make package   - Clean caches, validate apm.yml, and pack zip archive for Synapse release"
 	@echo "  make validate  - Run full repository governance, manifests, and link validation"
 	@echo "  make clean     - Clean local build caches, pycache, and dist/ directory"
 	@echo "  make test      - Run governance checks and end-to-end smoke tests"
 
 package: clean
-	@./scripts/package-agent.sh
+	@./scripts/package-synapse.sh
 
 validate:
 	@echo "==> Validating configuration manifests"

@@ -8,7 +8,7 @@ description: >
 
 # /janitor
 
-Audit and maintain repository governance across `.agents` against the formal specification in [`context/repo-governance-spec.md`](../../context/repo-governance-spec.md).
+Audit and maintain repository governance across Synapse against the formal specification in [`context/repo-governance-spec.md`](../../context/repo-governance-spec.md).
 
 > [!NOTE]
 > **Trigger:** Invoke directly via `/janitor` or request a repository governance audit.

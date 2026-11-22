@@ -1,14 +1,14 @@
 ---
 name: scaffold-domain
 description: >
-  Guided workflow for expanding .agents safely: checks for overlap, scaffolds
+  Guided workflow for expanding Synapse safely: checks for overlap, scaffolds
   glob-scoped rules, skills, and context specs, and runs verification checks.
   Trigger with /scaffold-domain or ask to add a new domain, language, or tool.
 ---
 
 # /scaffold-domain
 
-Standardized playbook for expanding `.agents` with a new language, tool, or engineering domain while maintaining strict governance compliance.
+Standardized playbook for expanding Synapse with a new language, tool, or engineering domain while maintaining strict governance compliance.
 
 ## Execution Steps
 

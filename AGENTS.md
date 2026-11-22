@@ -1,8 +1,8 @@
-# .agents Repository
+# Synapse Repository
 
-This repository provides centralized AI coding configurations for phage
-bioinformatics (Snakemake + Python), R package / Shiny / SQLite development,
-and Quarto technical publishing.
+This repository provides centralized AI coding configurations and multi-agent
+orchestration for phage bioinformatics (Snakemake + Python), R package / Shiny / SQLite
+development, and Quarto technical publishing.
 
 ## Conventions
 

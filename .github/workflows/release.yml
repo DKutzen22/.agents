@@ -1,4 +1,4 @@
-name: Release APM Package
+name: Release Synapse APM Package
 
 on:
   push:

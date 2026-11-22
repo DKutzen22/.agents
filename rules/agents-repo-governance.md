@@ -3,13 +3,13 @@ trigger: glob
 globs: ".agents/**, rules/**, skills/**, agents/**, context/**, memory/**, state/**, scripts/**"
 description: >
   Enforces structural governance, lifecycle contracts, and token discipline
-  defined in context/repo-governance-spec.md across all .agents components.
+  defined in context/repo-governance-spec.md across all Synapse components.
 ---
 
-# Agents Repository Governance
+# Synapse Repository Governance
 
 ## Spec Compliance & Lifecycle Contracts
-Before creating or modifying any file in `.agents`, consult @../context/repo-governance-spec.md.
+Before creating or modifying any file in Synapse, consult @../context/repo-governance-spec.md.
 
 1. **Context Protection (Read-Only):**
    - Files in `context/` are immutable technical reference specifications.

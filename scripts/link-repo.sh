@@ -1,12 +1,12 @@
 #!/bin/sh
-# scripts/link-repo.sh — Mounts centralized .agents into a target repository using relative symlinks
+# scripts/link-repo.sh — Mounts centralized Synapse (.agents) into a target repository using relative symlinks
 set -eu
 
 usage() {
     cat << 'EOF'
 Usage: link-repo.sh [OPTIONS] <TARGET_REPO_DIR>
 
-Mounts this central .agents repository into a target project repository by creating
+Mounts this central Synapse (.agents) repository into a target project repository by creating
 strict relative symlinks, configuring Git exclusions in .git/info/exclude, initializing
 repo-local state/memory/local-rules, and generating root entrypoint pointers.
 
