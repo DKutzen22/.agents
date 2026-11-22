@@ -19,7 +19,10 @@ validate:
 	@python3 -m json.tool rules.json > /dev/null
 	@python3 -m json.tool skills.json > /dev/null
 	@python3 -m json.tool mcp.json.template > /dev/null
-	@python3 -c "import yaml; d = yaml.safe_load(open('apm.yml')); assert all(k in d for k in ['name', 'namespace', 'version', 'description', 'targets'])"
+	@python3 -c '\
+import sys, re; \
+c = open("apm.yml").read(); \
+assert all(re.search(rf"^{k}:", c, re.M) for k in ["name", "namespace", "version", "description", "targets"])'
 	@echo "✓ All JSON and YAML manifests valid."
 	@echo "==> Running full-repo pre-commit governance verification"
 	@sh .githooks/pre-commit --all

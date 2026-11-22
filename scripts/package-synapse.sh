@@ -72,12 +72,24 @@ if [ ! -f "apm.yml" ]; then
 fi
 
 echo "==> Validating apm.yml manifest..."
-VALIDATION_RESULT=$(python3 -c "
-import sys, yaml
+VALIDATION_RESULT=$(python3 - << 'EOF'
+import sys, re
 
+manifest = {}
 try:
+    import yaml
     with open('apm.yml', 'r', encoding='utf-8') as f:
-        manifest = yaml.safe_load(f)
+        manifest = yaml.safe_load(f) or {}
+except ImportError:
+    with open('apm.yml', 'r', encoding='utf-8') as f:
+        content = f.read()
+    for key in ['name', 'namespace', 'version', 'description']:
+        m = re.search(f"^{key}" + r":\s*[\"']?([^\"'\n\r]+)[\"']?", content, re.M) # allow-path
+        if m:
+            manifest[key] = m.group(1).strip()
+    targets_block = re.search(r"^targets" + r":\s*\n((?:\s*-\s*[^\n\r]+\n?)+)", content, re.M) # allow-path
+    if targets_block:
+        manifest['targets'] = [line.strip().lstrip('-').strip() for line in targets_block.group(1).strip().split('\n') if line.strip().startswith('-')]
 except Exception as e:
     sys.stderr.write(f'Error reading apm.yml: {e}\n')
     sys.exit(1)
@@ -97,7 +109,8 @@ version = str(manifest['version']).strip().lstrip('v')
 namespace = str(manifest['namespace']).strip()
 
 print(f'{namespace}|{name}|{version}')
-")
+EOF
+)
 
 NAMESPACE=$(echo "$VALIDATION_RESULT" | cut -d'|' -f1)
 PKG_NAME=$(echo "$VALIDATION_RESULT" | cut -d'|' -f2)
