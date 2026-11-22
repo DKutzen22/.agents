@@ -21,5 +21,5 @@ CREATE TABLE IF NOT EXISTS example (
 
 ## How & When Agents Touch These Files
 * Read-only for agents during standard tasks.
-* Agents access these files when gated by specific rules (`rules/context-and-memory-gates.md`) prior to touching schemas, parsers, or SQL queries.
+* Agents access these files when gated by specific rules (`instructions/memory-protocol.instructions.md`) prior to touching schemas, parsers, or SQL queries.
 * Modifications require explicit human requests for schema migrations or specification updates.

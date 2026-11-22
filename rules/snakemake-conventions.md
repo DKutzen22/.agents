@@ -1,1 +1,0 @@
-snakemake-conventions.instructions.md

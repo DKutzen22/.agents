@@ -1,1 +1,0 @@
-r-package-standards.instructions.md

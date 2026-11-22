@@ -57,22 +57,22 @@ for file in $STAGED_FILES; do
     esac
 done
 
-# Check 3: rules/ frontmatter & size
+# Check 3: instructions/ frontmatter & size
 for file in $STAGED_FILES; do
     case "$file" in
-        rules/*.md)
-            if [ "$file" = "rules/README.md" ]; then
+        instructions/*.md|rules/*.md)
+            if [ ! -f "$file" ] || [ "$file" = "instructions/README.md" ] || [ "$file" = "rules/README.md" ]; then
                 continue
             fi
-            # Check for globs: in frontmatter
-            if ! grep -q '^globs:' "$file"; then
-                echo "❌ [PRE-COMMIT] $file missing 'globs:' in YAML frontmatter."
+            # Check for globs: or applyTo: in frontmatter
+            if ! grep -qE '^(globs|applyTo):' "$file"; then
+                echo "❌ [PRE-COMMIT] $file missing 'applyTo:' / 'globs:' in YAML frontmatter."
                 FAILED=1
             fi
             # Check line length (allow grandfathered legacy rules)
             RULE_LINES=$(wc -l < "$file")
             case "$file" in
-                rules/bioinformatics-data-integrity.*|rules/shiny-and-sqlite.*|rules/snakemake-conventions.*|rules/guardrails.*)
+                *shiny-and-sqlite*|*snakemake-conventions*|*guardrails*|*bioinformatics-data-integrity*)
                     # Grandfathered rules
                     ;;
                 *)

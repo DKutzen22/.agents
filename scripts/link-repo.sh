@@ -137,7 +137,7 @@ echo "    Target Repository: $TARGET_DIR"
 echo "    Relative Offset:   $REL_CENTRAL"
 
 # 3. Create relative symlinks for shared static directories
-SHARED_DIRS="rules prompts skills agents context scripts"
+SHARED_DIRS="instructions prompts skills agents context scripts"
 for dir in $SHARED_DIRS; do
     dest="$TARGET_AGENTS/$dir"
     rel_src="$REL_CENTRAL/$dir"
@@ -156,6 +156,14 @@ for dir in $SHARED_DIRS; do
     (cd "$TARGET_AGENTS" && ln -s "$rel_src" "$dir")
     echo "  ✓ Linked $dir -> $rel_src"
 done
+
+# Create relative portability symlink: .agents/rules -> instructions
+RULES_LINK="$TARGET_AGENTS/rules"
+if [ -e "$RULES_LINK" ] || [ -L "$RULES_LINK" ]; then
+    rm -rf "$RULES_LINK"
+fi
+(cd "$TARGET_AGENTS" && ln -s "instructions" "rules")
+echo "  ✓ Created portability symlink rules -> instructions"
 
 # 4. Create relative symlinks for configuration manifests & hooks
 SHARED_CONFIGS="hooks.json rules.json skills.json agents.json apm.yml"

@@ -10,24 +10,24 @@ frontmatter schemas, and symlinking topology across all integrated tech stacks.
 
 | Folder | Purpose | Read Trigger | Write Trigger | Lifespan | Line Limit | Allowed Content | Banned Content |
 |---|---|---|---|---|---|---|---|
-| `rules/` | Always-on behavioral guardrails and APM instructions | Auto-evaluated on file matching `applyTo` / `globs` | New cross-cutting standard or project convention | Permanent | ≤45 lines (hard cap 60) | Scoped YAML frontmatter (`applyTo`, `globs`), deterministic constraints | Catch-all `**/*` without justification, narrative tutorials, tool output quirks |
+| `instructions/` | Always-on behavioral guardrails and APM instructions | Auto-evaluated on file matching `applyTo` / `globs` | New cross-cutting standard or project convention | Permanent | ≤45 lines (hard cap 60) | Scoped YAML frontmatter (`applyTo`, `globs`), deterministic constraints | Catch-all `**/*` without justification, narrative tutorials, tool output quirks |
 | `prompts/` | Reusable APM prompt workflows and slash commands | Explicit user invocation (`/<name>`) or parameter execution | New executable workflow or command | Permanent | None (modular) | YAML frontmatter (`description`, `input`), command execution checklists | Unchecked mutating commands without confirmation |
 | `skills/` | Unified home for domain playbooks and Antigravity skills | Intent match on description OR explicit `/<name>` invocation | New domain runbook or repeatable workflow | Permanent | None (modular sections) | Procedural checklists, CLI flags, troubleshooting tables in `<name>/SKILL.md` | Loose `.md` files at `skills/` root, non-standard directory layouts |
 | `agents/` | Isolated subagent definitions with scoped tooling | Delegated execution via agent orchestration tool | New specialized subagent role or persona | Permanent | ≤80 lines | YAML frontmatter (`description`, `tools`), review checklists, scope definitions | Hardcoded credentials, unrestricted tool allocations |
-| `context/` | Canonical passive reference data, schemas, and resource profiles | Triggered by gated rules (`rules/memory-protocol.instructions.md`) | Formal specification change or schema migration | Permanent | None (normative) | DDL scripts, lookup tables, column mapping dictionaries, hardware tiers | Imperative agent instructions ("You must", "Always run", "Step 1:") |
-| `memory/` | Empirical scar tissue, tool quirks, and architectural decisions | Scoped rule triggers (`rules/memory-protocol.instructions.md`) | Discovery of new tool quirks, parser bugs, or accepted ADRs | Append-Only | None (itemized entries) | Structured ADRs (`ADR-NNN`), tool quirk entries, deduplicated failure patterns | Speculative advice, unverified bug notes, overwriting existing decisions |
-| `state/` | Ephemeral working memory for inter-session continuity | Session start (`/resume`) or rule gate (`rules/state-continuity.instructions.md`) | Session conclusion (`/handoff`) or milestone transition | Overwrite-Only | Hard cap 50 lines (`handoff.md`) | Fixed 6-section handoff schema, checkbox roadmap tracking (`active-roadmap.md`) | Unbounded append logs, scratch files without `.tmp` suffix, commit logs |
+| `context/` | Canonical passive reference data, schemas, and resource profiles | Triggered by gated rules (`instructions/memory-protocol.instructions.md`) | Formal specification change or schema migration | Permanent | None (normative) | DDL scripts, lookup tables, column mapping dictionaries, hardware tiers | Imperative agent instructions ("You must", "Always run", "Step 1:") |
+| `memory/` | Empirical scar tissue, tool quirks, and architectural decisions | Scoped rule triggers (`instructions/memory-protocol.instructions.md`) | Discovery of new tool quirks, parser bugs, or accepted ADRs | Append-Only | None (itemized entries) | Structured ADRs (`ADR-NNN`), tool quirk entries, deduplicated failure patterns | Speculative advice, unverified bug notes, overwriting existing decisions |
+| `state/` | Ephemeral working memory for inter-session continuity | Session start (`/resume`) or rule gate (`instructions/state-continuity.instructions.md`) | Session conclusion (`/handoff`) or milestone transition | Overwrite-Only | Hard cap 50 lines (`handoff.md`) | Fixed 6-section handoff schema, checkbox roadmap tracking (`active-roadmap.md`) | Unbounded append logs, scratch files without `.tmp` suffix, commit logs |
 | `scripts/` | Zero-dependency repository tooling, linking, and verification scripts | Automated workflows (`/janitor`, Git hooks, linking) | New repo management or verification utility | Permanent | None (modular) | POSIX `sh` (`set -eu`) and Python 3 stdlib CLI scripts supporting `--help` | External dependencies (pip/virtualenvs), non-executable scripts, analysis pipelines |
 
 > [!NOTE]
-> **Commands Deprecation:** Antigravity does not use a separate `commands/` directory; all slash workflows live in `skills/<name>/SKILL.md`. For compatibility with other CLI agents (such as Claude Code) expecting a `.agents/commands/` path, `scripts/link-repo.sh` generates a relative symlink `.agents/commands -> skills` inside consumer repositories.
+> **Instructions & Rules:** APM natively deploys from `instructions/`. For Antigravity and legacy harness compatibility, `rules.json` points directly to `instructions`, and a root symlink `rules -> instructions` is provided.
 
 ---
 
 ## 2. Frontmatter & Naming Schemas
 
-### A. Instructions & Rules (`rules/<kebab-case-name>.instructions.md`)
-* **Path Pattern:** `rules/[a-z0-9-]+.instructions.md`
+### A. Instructions & Rules (`instructions/<kebab-case-name>.instructions.md`)
+* **Path Pattern:** `instructions/[a-z0-9-]+.instructions.md`
 * **Size Constraint:** Target ≤45 lines; absolute maximum 60 lines.
 * **Frontmatter Schema:**
   ```yaml

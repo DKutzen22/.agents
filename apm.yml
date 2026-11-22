@@ -20,7 +20,7 @@ entrypoints:
   handoff: prompts/handoff.prompt.md
 
 primitives:
-  instructions: rules
+  instructions: instructions
   prompts: prompts
   skills: skills
   agents: agents

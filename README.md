@@ -135,7 +135,7 @@ The repository is organized into canonical primitives conforming to APM and Anti
 
 ```text
 synapse/
-├── rules/        # APM *.instructions.md guardrails auto-triggered by globs/applyTo
+├── instructions/ # APM *.instructions.md guardrails auto-triggered by applyTo / globs
 ├── prompts/      # APM *.prompt.md parameter-driven workflows & slash commands
 ├── skills/       # Modular skills (<skill-name>/SKILL.md) for Antigravity & Agent Skills
 ├── agents/       # Isolated subagent definitions with restricted tool grants
@@ -145,22 +145,22 @@ synapse/
 ├── scripts/      # Zero-dependency utilities (POSIX sh, Python 3 stdlib)
 ├── apm.yml       # APM package manifest declaring targets, primitives, and entrypoints
 ├── hooks.json    # Native lifecycle hooks (PreToolUse/PostToolUse governance)
-├── rules.json    # Antigravity rule discovery manifest
+├── rules.json    # Antigravity rule discovery manifest (points to instructions)
 ├── skills.json   # Antigravity skill discovery manifest
 └── agents.json   # Antigravity subagent discovery manifest
 ```
 
-### 1. `rules/` (Always-On Guardrails & Instructions)
-*Maintainer Guide: [`rules/README.md`](rules/README.md) | Trigger: Automatic via `applyTo` / `globs`*
-* **[`guardrails.instructions.md`](rules/guardrails.instructions.md):** Bans hardcoded absolute paths and accession IDs; enforces random seeds; mandates defensive parsing for `.gbk`, `.gff3`, and `.fasta`; bans hardcoded `NCBI_API_KEY` tokens and HPC cluster user scratch paths (`/scratch/<user>`, `/lustre/...`).
-* **[`r-package-standards.instructions.md`](rules/r-package-standards.instructions.md):** Enforces explicit `pkg::fun()` namespacing (zero `library()` calls in `R/`), `roxygen2` documentation on exported functions, `testthat` 3rd edition, and `styler`/`lintr` compliance.
-* **[`shiny-and-sqlite.instructions.md`](rules/shiny-and-sqlite.instructions.md):** Enforces Shiny module `NS(id)` isolation, parameterized queries (`DBI::dbBind` / `glue::glue_sql`), and physical separation of pure database query functions from reactive observers.
-* **[`snakemake-conventions.instructions.md`](rules/snakemake-conventions.instructions.md):** Enforces per-rule `conda:`/`container:` directives with pinned package versions, `log:` and `benchmark:` paths, `temp()` intermediate management, and SLURM-ready `resources:` tiers.
-* **[`memory-protocol.instructions.md`](rules/memory-protocol.instructions.md):** Mandates consulting schemas in `context/` and quirks in `memory/` before modifying database access or parsers.
-* **[`state-continuity.instructions.md`](rules/state-continuity.instructions.md):** Checks `.synapse/state.json` / `.synapse/handoff.md` before initiating multi-file edits or architecture plans.
-* **[`synapse-governance.instructions.md`](rules/synapse-governance.instructions.md):** Enforces lifecycle contracts, line limits (≤60 lines), and token discipline across all Synapse components.
-* **[`git-conventions.instructions.md`](rules/git-conventions.instructions.md):** Enforces Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`), atomic changesets, descriptive PR summaries, and bans raw data files (>10MB).
-* **[`python-standards.instructions.md`](rules/python-standards.instructions.md):** Enforces modern Python packaging (`src/` layout, `pyproject.toml`), explicit type annotations, `pytest` unit suites, `ruff` linting, `pathlib.Path`, and deterministic seeds.
+### 1. `instructions/` (Always-On Guardrails & Instructions)
+*Maintainer Guide: [`instructions/README.md`](instructions/README.md) | Trigger: Automatic via `applyTo` / `globs`*
+* **[`guardrails.instructions.md`](instructions/guardrails.instructions.md):** Bans hardcoded absolute paths and accession IDs; enforces random seeds; mandates defensive parsing for `.gbk`, `.gff3`, and `.fasta`; bans hardcoded `NCBI_API_KEY` tokens and HPC cluster user scratch paths (`/scratch/<user>`, `/lustre/...`).
+* **[`r-package-standards.instructions.md`](instructions/r-package-standards.instructions.md):** Enforces explicit `pkg::fun()` namespacing (zero `library()` calls in `R/`), `roxygen2` documentation on exported functions, `testthat` 3rd edition, and `styler`/`lintr` compliance.
+* **[`shiny-and-sqlite.instructions.md`](instructions/shiny-and-sqlite.instructions.md):** Enforces Shiny module `NS(id)` isolation, parameterized queries (`DBI::dbBind` / `glue::glue_sql`), and physical separation of pure database query functions from reactive observers.
+* **[`snakemake-conventions.instructions.md`](instructions/snakemake-conventions.instructions.md):** Enforces per-rule `conda:`/`container:` directives with pinned package versions, `log:` and `benchmark:` paths, `temp()` intermediate management, and SLURM-ready `resources:` tiers.
+* **[`memory-protocol.instructions.md`](instructions/memory-protocol.instructions.md):** Mandates consulting schemas in `context/` and quirks in `memory/` before modifying database access or parsers.
+* **[`state-continuity.instructions.md`](instructions/state-continuity.instructions.md):** Checks `.synapse/state.json` / `.synapse/handoff.md` before initiating multi-file edits or architecture plans.
+* **[`synapse-governance.instructions.md`](instructions/synapse-governance.instructions.md):** Enforces lifecycle contracts, line limits (≤60 lines), and token discipline across all Synapse components.
+* **[`git-conventions.instructions.md`](instructions/git-conventions.instructions.md):** Enforces Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`), atomic changesets, descriptive PR summaries, and bans raw data files (>10MB).
+* **[`python-standards.instructions.md`](instructions/python-standards.instructions.md):** Enforces modern Python packaging (`src/` layout, `pyproject.toml`), explicit type annotations, `pytest` unit suites, `ruff` linting, `pathlib.Path`, and deterministic seeds.
 
 ### 2. `skills/` (Domain Playbooks & Workflows)
 *Maintainer Guide: [`skills/README.md`](skills/README.md) | Trigger: Intent match or explicit `/<name>`*

@@ -20,6 +20,6 @@ Files in this directory are strictly **append-only**. Never overwrite prior entr
 ```
 
 ## How & When Agents Touch These Files
-* Agents read entries when gated by `rules/context-and-memory-gates.md`.
+* Agents read entries when gated by `instructions/memory-protocol.instructions.md`.
 * Agents append new entries only when resolving a verified, non-obvious bug or when documenting an agreed-upon architecture shift via `/handoff`.
 * Agents verify that an equivalent quirk or ADR does not already exist before appending.

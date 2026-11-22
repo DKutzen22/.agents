@@ -3,7 +3,7 @@
 ---
 
 ### Track 1: Snakemake & Bioinformatics Pipelines
-- [x] Standardize Snakemake conventions rule with HPC resource directives (`rules/snakemake-conventions.md`)
+- [x] Standardize Snakemake conventions rule with HPC resource directives (`instructions/snakemake-conventions.instructions.md`)
 - [x] Create reference resource tiers and SLURM profiles (`context/hpc-and-env-profiles.md`)
 - [x] Document Pharokka, Phold, and Phynteny output specs (`context/genbank-and-phrog-specs.md`)
 - [x] Author automated workflow smoke-testing skill (`skills/smoke-test-pipeline/SKILL.md`)
@@ -15,7 +15,7 @@
 ### Track 2: R Package, SQLite & Shiny Frontend
 - [x] Establish R package style and testthat 3e standards (`rules/r-package-standards.md`)
 - [x] Define canonical SQLite phage annotation schema (`context/sqlite-phage-schema.sql`)
-- [x] Document SQLite query patterns and Shiny module isolation (`rules/shiny-and-sqlite.md`)
+- [x] Document SQLite query patterns and Shiny module isolation (`instructions/shiny-and-sqlite.instructions.md`)
 - [x] Author schema drift audit skill (`skills/audit-schema-sync/SKILL.md`)
 - [ ] Implement `R/db_*.R` database access functions with parameterized queries
 - [ ] Build Shiny module `R/mod_browse.R` for annotation table filtering with PHROG category colors

@@ -34,6 +34,6 @@ Immediate next step for the next turn.
 ```
 
 ## How & When Agents Touch These Files
-* Read on session initialization via `/resume` or `rules/state-continuity.md`.
+* Read on session initialization via `/resume` or `instructions/state-continuity.instructions.md`.
 * Overwritten cleanly upon session completion via `/handoff`.
 * **Important:** This folder is kept **repo-local** and is never symlinked globally.

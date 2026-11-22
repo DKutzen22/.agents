@@ -1,1 +1,0 @@
-memory-protocol.instructions.md
