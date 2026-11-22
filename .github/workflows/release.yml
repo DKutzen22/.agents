@@ -1,0 +1,88 @@
+name: Release APM Package
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Dependencies
+        run: pip install pyyaml
+
+      - name: Validate apm.yml Manifest & Tag Alignment
+        run: |
+          echo "==> Validating apm.yml manifest schema"
+          python3 -c "
+          import sys, yaml
+          with open('apm.yml', 'r', encoding='utf-8') as f:
+              data = yaml.safe_load(f)
+          required = ['name', 'namespace', 'version', 'description', 'targets']
+          missing = [k for k in required if k not in data]
+          if missing:
+              sys.stderr.write(f'FAIL: apm.yml missing required fields: {missing}\n')
+              sys.exit(1)
+          if not isinstance(data['targets'], list) or len(data['targets']) == 0:
+              sys.stderr.write('FAIL: apm.yml targets must be a non-empty list\n')
+              sys.exit(1)
+          
+          # Verify tag matches apm.yml version
+          raw_tag = '${{ github.ref_name }}'
+          tag_ver = raw_tag.lstrip('v')
+          manifest_ver = str(data['version']).strip().lstrip('v')
+          if tag_ver != manifest_ver:
+              sys.stderr.write(f'FAIL: Git tag ({raw_tag}) does not match apm.yml version ({data[\"version\"]})\n')
+              sys.exit(1)
+          print(f'✓ Validated {data[\"namespace\"]}/{data[\"name\"]} v{data[\"version\"]} matches git tag {raw_tag}')
+          "
+
+      - name: Validate Repository Governance
+        run: |
+          echo "==> Validating JSON configuration manifests"
+          python3 -m json.tool hooks.json > /dev/null
+          python3 -m json.tool agents.json > /dev/null
+          python3 -m json.tool rules.json > /dev/null
+          python3 -m json.tool skills.json > /dev/null
+          python3 -m json.tool mcp.json.template > /dev/null
+          echo "✓ All JSON manifests valid."
+
+          echo "==> Running full-repo pre-commit governance verification"
+          sh .githooks/pre-commit --all
+          echo "✓ Governance checks passed."
+
+          echo "==> Auditing relative links across documentation"
+          python3 scripts/check-links.py --root .
+          echo "✓ Cross-link audit passed."
+
+      - name: Build Distribution Archive
+        run: |
+          echo "==> Building APM distribution archive"
+          chmod +x scripts/package-agent.sh
+          make package
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.zip
+            dist/*.sha256
+          generate_release_notes: true
+          name: "Release ${{ github.ref_name }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

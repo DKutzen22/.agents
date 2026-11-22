@@ -1,0 +1,58 @@
+# .gitattributes — Agent package file attributes and line ending normalizations
+# Ensure consistent cross-platform line endings across developer workstations and CI runners.
+
+# Auto-detect text files and normalize line endings to LF
+* text=auto eol=lf
+
+# Manifests and configuration files
+apm.yml text eol=lf
+apm.lock.yaml text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.template text eol=lf
+Makefile text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Agent instructions, skills, rules, and documentation
+*.md text eol=lf
+*.txt text eol=lf
+
+# Scripts and programming languages
+*.sh text eol=lf
+*.py text eol=lf
+*.R text eol=lf
+*.r text eol=lf
+*.sql text eol=lf
+*.smk text eol=lf
+Snakefile text eol=lf
+
+# Bioinformatics and scientific data formats
+*.gbk text eol=lf
+*.fasta text eol=lf
+*.fa text eol=lf
+*.fna text eol=lf
+*.gff text eol=lf
+*.gff3 text eol=lf
+*.tsv text eol=lf
+*.csv text eol=lf
+
+# Binary and archive formats
+*.zip binary
+*.tar.gz binary
+*.tgz binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.svg text eol=lf
+*.sqlite binary
+*.sqlite3 binary
+*.db binary
+*.pdf binary
+
+# Git archive export exclusions (ignored during git archive / release bundles)
+.git export-ignore
+.github export-ignore
+.githooks export-ignore

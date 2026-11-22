@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Validate JSON Configuration Manifests
+      - name: Validate Configuration Manifests
         run: |
           echo "==> Validating JSON configuration manifests"
           python3 -m json.tool hooks.json > /dev/null
@@ -27,7 +27,8 @@ jobs:
           python3 -m json.tool rules.json > /dev/null
           python3 -m json.tool skills.json > /dev/null
           python3 -m json.tool mcp.json.template > /dev/null
-          echo "✓ All JSON manifests valid."
+          python3 -c "import yaml; d = yaml.safe_load(open('apm.yml')); assert all(k in d for k in ['name', 'namespace', 'version', 'description', 'targets'])"
+          echo "✓ All JSON and YAML manifests valid."
 
       - name: Governance & Pre-Commit Verification
         run: |
@@ -48,6 +49,7 @@ jobs:
           python3 -m py_compile scripts/*.py
 
           echo "==> Verifying --help interface contracts"
+          ./scripts/package-agent.sh --help > /dev/null
           ./scripts/link-repo.sh --help > /dev/null
           ./scripts/unlink-repo.sh --help > /dev/null
           ./scripts/sync-all-repos.sh --help > /dev/null

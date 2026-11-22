@@ -1,0 +1,41 @@
+name: synapse
+namespace: dkutzen22
+version: 1.0.0
+description: "High-throughput, memory-driven multi-agent framework featuring modular workflows, strict execution guardrails, and persistent context."
+license: MIT
+author: dkutzen22
+repository: https://github.com/dkutzen22/.agents
+
+targets:
+  - gemini
+  - antigravity
+  - claude
+  - cursor
+  - copilot
+  - agent-skills
+
+primitives:
+  rules: rules
+  skills: skills
+  agents: agents
+  hooks: hooks.json
+  mcp: mcp.json.template
+
+keywords:
+  - agent-package
+  - bioinformatics
+  - phage
+  - snakemake
+  - r-package
+  - shiny
+  - sqlite
+  - quarto
+  - claude-code
+  - cursor
+  - github-copilot
+  - multi-agent
+  - workflow-orchestration
+  - guardrails
+  - memory-management
+  - apm
+  - system-instructions

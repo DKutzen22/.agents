@@ -29,6 +29,12 @@ _freeze/
 _site/
 *.Rcheck/
 
+# Distribution & Build Packages
+dist/
+build/
+*.zip
+*.sha256
+
 # Pipeline Logs & Benchmarks
 logs/
 benchmarks/

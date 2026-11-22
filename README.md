@@ -18,11 +18,58 @@ Any AI agent working in a mounted repository automatically adopts your coding st
 
 ---
 
-## 30-Second Quick Start
+## Installation & Distribution
+
+This repository is distributed for public, team, and multi-agent usage via APM (Agent Package Manager), GitHub Releases, and direct repository linking:
+
+### Option 1: Install via APM (Recommended for Teams & Multi-Tool Environments)
+
+Using Microsoft's **APM (Agent Package Manager)**, you can install this package into any repository and compile configurations directly to your target harnesses (Claude Code, Cursor, GitHub Copilot):
 
 ```bash
-# 1. Clone this repository (if not already local)
-git clone https:github.com/DKutzen22/.agents.git ~/.agents-central
+# Install directly from GitHub into your active project:
+apm install github:dkutzen22/.agents
+
+# Or install from the APM registry / namespace shorthand:
+apm install dkutzen22/synapse
+```
+
+To declare `.agents` as a versioned dependency in your consumer project's `apm.yml`:
+
+```yaml
+# In your target project's apm.yml
+name: my-phage-project
+version: 0.1.0
+
+targets:
+  - claude
+  - cursor
+  - copilot
+
+dependencies:
+  apm:
+    - git: https://github.com/dkutzen22/.agents
+      ref: v1.0.0
+```
+
+Run `apm install` to fetch, verify with `apm.lock.yaml`, and compile the skills, rules, and configurations into the appropriate native paths (`.claude/`, `.cursor/`, `.github/`).
+
+### Option 2: Pre-Packaged Release Archive (.zip)
+
+Every release published via GitHub Actions attaches a standardized `.zip` distribution bundle and SHA-256 checksum:
+
+```bash
+# Download and install pre-built release package
+apm install https://github.com/dkutzen22/.agents/releases/download/v1.0.0/synapse-v1.0.0.zip
+```
+
+### Option 3: Local Monorepo & HPC Symlink Mount
+
+For local multi-repo development or offline HPC clusters without APM:
+
+```bash
+# 1. Clone this repository centrally (if not already local)
+git clone https://github.com/DKutzen22/.agents.git ~/.agents-central
 
 # 2. Activate the pre-commit governance & security hook in this repository
 cd ~/.agents-central
@@ -31,7 +78,7 @@ git config core.hooksPath .githooks
 # 3. Mount into your target bioinformatics or R project repository
 ./scripts/link-repo.sh ~/projects/<my-project>
 
-# 4. Open your project in your IDE or CLI and type:
+# 4. Open your project in your IDE or CLI and invoke:
 # /resume
 ```
 
@@ -204,6 +251,17 @@ The central `.agents` architecture is automatically validated via GitHub Actions
 3. **Cross-Link Integrity:** Runs `scripts/check-links.py` to assert zero broken internal file references.
 4. **CLI Contract Verification:** Syntax-checks all shell and Python scripts and verifies `--help` execution.
 5. **End-to-End Mount & Teardown:** Executes `scripts/link-repo.sh` and `scripts/unlink-repo.sh` against an isolated Git fixture repository.
+
+---
+
+## Packaging & Release Automation
+
+This repository provides reproducible build scripts and continuous integration for packaging and releasing agent configurations:
+
+* **APM Manifest (`apm.yml`):** Specifies package metadata (`dkutzen22/synapse`), version (`1.0.0`), primitive directories, and target harnesses.
+* **Line Ending Governance (`.gitattributes`):** Normalizes all text files to LF line endings (`eol=lf`) and marks binary/archive formats explicitly.
+* **Build Command (`make package`):** Cleans transient caches and calls [`scripts/package-agent.sh`](scripts/package-agent.sh) to assemble `dist/synapse-v<version>.zip` and calculate its SHA-256 checksum.
+* **Tag-Triggered CI/CD ([`.github/workflows/release.yml`](.github/workflows/release.yml)):** Automatically runs on semantic git tags (`v*.*.*`), validates `apm.yml`, executes pre-commit governance, compiles the distribution zip, and publishes a GitHub Release.
 
 ---
 
