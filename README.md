@@ -28,7 +28,7 @@ Using Microsoft's **APM (Agent Package Manager)**, you can install Synapse into 
 
 ```bash
 # Install directly from GitHub into your active project:
-apm install github:dkutzen22/.agents
+apm install github:dkutzen22/synapse
 
 # Or install from the APM registry / namespace shorthand:
 apm install dkutzen22/synapse
@@ -51,7 +51,7 @@ targets:
 
 dependencies:
   apm:
-    - git: https://github.com/dkutzen22/.agents
+    - git: https://github.com/dkutzen22/synapse
       ref: v1.1.0
 ```
 
@@ -88,7 +88,7 @@ Every release published via GitHub Actions attaches a standardized `.zip` distri
 
 ```bash
 # Download and install pre-built release package
-apm install https://github.com/dkutzen22/.agents/releases/download/v1.1.0/synapse-v1.1.0.zip
+apm install https://github.com/dkutzen22/synapse/releases/download/v1.1.0/synapse-v1.1.0.zip
 ```
 
 ### Option 3: Local Monorepo & HPC Symlink Mount
@@ -97,7 +97,7 @@ For local multi-repo development or offline HPC clusters without APM:
 
 ```bash
 # 1. Clone this repository centrally (if not already local)
-git clone https://github.com/DKutzen22/.agents.git ~/.synapse-central
+git clone https://github.com/DKutzen22/synapse.git ~/.synapse-central
 
 # 2. Activate the pre-commit governance & security hook in this repository
 cd ~/.synapse-central
