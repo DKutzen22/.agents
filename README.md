@@ -22,14 +22,14 @@ Any AI agent working in a mounted repository automatically adopts your coding st
 
 ```bash
 # 1. Clone this repository (if not already local)
-git clone git@github.com:<your-username>/.agents.git ~/.agents-central
+git clone https:github.com/DKutzen22/.agents.git ~/.agents-central
 
 # 2. Activate the pre-commit governance & security hook in this repository
 cd ~/.agents-central
 git config core.hooksPath .githooks
 
 # 3. Mount into your target bioinformatics or R project repository
-./scripts/link-repo.sh ~/projects/my-phage-pipeline
+./scripts/link-repo.sh ~/projects/<my-project>
 
 # 4. Open your project in your IDE or CLI and type:
 # /resume
