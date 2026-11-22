@@ -2,8 +2,26 @@
 # .githooks/pre-commit — Validates staged files against repository governance spec
 set -e
 
-# Collect staged files
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+ALL_MODE=0
+for arg in "$@"; do
+    case "$arg" in
+        --all)
+            ALL_MODE=1
+            ;;
+        -h|--help)
+            echo "Usage: pre-commit [--all]"
+            exit 0
+            ;;
+    esac
+done
+
+if [ "$ALL_MODE" -eq 1 ] || [ "${PRE_COMMIT_ALL:-0}" = "1" ]; then
+    STAGED_FILES=$(git ls-files)
+else
+    # Collect staged files
+    STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null || true)
+fi
+
 if [ -z "$STAGED_FILES" ]; then
     exit 0
 fi
@@ -96,7 +114,7 @@ if [ -n "$CONTEXT_EDITS" ]; then
     if echo "$CURRENT_BRANCH" | grep -qiE 'spec|schema'; then
         SPEC_APPROVED=1
     fi
-    if [ "${SPEC_UPDATE:-0}" = "1" ]; then
+    if [ "$ALL_MODE" -eq 1 ] || [ "${SPEC_UPDATE:-0}" = "1" ]; then
         SPEC_APPROVED=1
     fi
     if [ "$SPEC_APPROVED" -eq 0 ]; then
@@ -176,7 +194,15 @@ if [ -n "$COMMANDS_FILES" ]; then
 fi
 
 # Check 9: Absolute Path Scanner (/Users/, /home/, C:\)
-if [ -n "$STAGED_DIFF_ADDS" ]; then
+if [ "$ALL_MODE" -eq 1 ]; then
+    ALL_ABS_PATHS=$(git grep -n -E '(/Users/[a-zA-Z0-9_.-]+|/home/[a-zA-Z0-9_.-]+|[A-Za-z]:\\[a-zA-Z0-9_.-]+)' | grep -v -E '(# allow-path|Never write|Bans hardcoded|Ban all|Replaced all|Scan for)' || true)
+    if [ -n "$ALL_ABS_PATHS" ]; then
+        echo "🚨 [SECURITY] Hardcoded machine-specific absolute path detected in repository:"
+        echo "$ALL_ABS_PATHS"
+        echo "   Use repo-relative paths (e.g., .agents/state/handoff.md) or append '# allow-path' to override."
+        FAILED=1
+    fi
+elif [ -n "$STAGED_DIFF_ADDS" ]; then
     ABSOLUTE_PATHS=$(echo "$STAGED_DIFF_ADDS" | grep -E '(/Users/[a-zA-Z0-9_.-]+|/home/[a-zA-Z0-9_.-]+|[A-Za-z]:\\[a-zA-Z0-9_.-]+)' | grep -v -E '(# allow-path|Never write|Bans hardcoded|Ban all|Replaced all|Scan for)' || true)
     if [ -n "$ABSOLUTE_PATHS" ]; then
         echo "🚨 [SECURITY] Hardcoded machine-specific absolute path detected in staged changes:"

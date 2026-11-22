@@ -1,0 +1,94 @@
+name: Validate .agents Architecture
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate-governance:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate JSON Configuration Manifests
+        run: |
+          echo "==> Validating JSON configuration manifests"
+          python3 -m json.tool hooks.json > /dev/null
+          python3 -m json.tool agents.json > /dev/null
+          python3 -m json.tool rules.json > /dev/null
+          python3 -m json.tool skills.json > /dev/null
+          python3 -m json.tool mcp.json.template > /dev/null
+          echo "✓ All JSON manifests valid."
+
+      - name: Governance & Pre-Commit Verification
+        run: |
+          echo "==> Running full-repo pre-commit governance verification"
+          sh .githooks/pre-commit --all
+          echo "✓ Governance checks passed."
+
+      - name: Relative Cross-Link Validation
+        run: |
+          echo "==> Auditing relative links across documentation"
+          python3 scripts/check-links.py --root .
+          echo "✓ Cross-link audit passed."
+
+      - name: Helper Script Syntax & --help Checks
+        run: |
+          echo "==> Verifying shell and Python script syntax"
+          sh -n scripts/*.sh
+          python3 -m py_compile scripts/*.py
+
+          echo "==> Verifying --help interface contracts"
+          ./scripts/link-repo.sh --help > /dev/null
+          ./scripts/unlink-repo.sh --help > /dev/null
+          ./scripts/sync-all-repos.sh --help > /dev/null
+          python3 scripts/validate-gbk-sqlite.py --help > /dev/null
+          python3 scripts/check-links.py --help > /dev/null
+          python3 scripts/hook-handler.py --help > /dev/null
+          echo "✓ All script syntax and CLI contracts verified."
+
+      - name: End-to-End Link & Unlink Smoke Test
+        run: |
+          echo "==> Running end-to-end multi-repo mounting & teardown smoke test"
+          TEST_TARGET="/tmp/ci-test-target-repo"
+          rm -rf "$TEST_TARGET"
+          mkdir -p "$TEST_TARGET"
+          git -C "$TEST_TARGET" init -b main
+
+          # 1. Mount target repo
+          ./scripts/link-repo.sh --ci-copy "$TEST_TARGET"
+
+          # 2. Verify all generated symlinks are strictly relative
+          python3 -c "
+          import os, pathlib, sys
+          agents_dir = pathlib.Path('$TEST_TARGET/.agents')
+          for item in agents_dir.iterdir():
+              if item.is_symlink():
+                  target = os.readlink(item)
+                  if target.startswith('/'):
+                      sys.stderr.write(f'FAIL: Absolute symlink detected: {item.name} -> {target}\n')
+                      sys.exit(1)
+          "
+          echo "✓ All mount symlinks verified as relative."
+
+          # 3. Verify .git/info/exclude
+          grep -q "# --- .agents global symlinks ---" "$TEST_TARGET/.git/info/exclude"
+          echo "✓ Git exclusion verified in target."
+
+          # 4. Verify unlinking tears down mounts while preserving state
+          ./scripts/unlink-repo.sh "$TEST_TARGET"
+          test ! -L "$TEST_TARGET/.agents/rules"
+          test ! -L "$TEST_TARGET/.agents/skills"
+          test -f "$TEST_TARGET/.agents/state/handoff.md"
+          test -f "$TEST_TARGET/.agents/memory/project-decisions.md"
+          echo "✓ Unlink teardown verified."
+          rm -rf "$TEST_TARGET"

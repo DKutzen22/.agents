@@ -3,32 +3,32 @@
 ## Active Repo & Branch
 * **Repo:** `.agents`
 * **Branch:** `main`
-* **Last Updated:** 2026-11-21 16:52
+* **Last Updated:** 2026-11-21 17:08
 
 ## Current Objective
-* Multi-repo mounting architecture: relative symlinks, .git/info/exclude, local-rules, and zero machine-specific paths.
+* Multi-domain AI engineering hub expansion: meta-skills, packaging, containerization, fleet management, and CI self-testing.
 
 ## Completed This Session
-* Refactored `scripts/link-repo.sh` to compute dynamic relative offsets (`REL_CENTRAL`), creating strictly relative symlinks.
-* Implemented clean Git isolation in `link-repo.sh`: mounts are excluded via `<target>/.git/info/exclude` (not polluting target git status), while local `state/`, `memory/`, and `local-rules/` are committed.
-* Added `--ci-copy` flag to `scripts/link-repo.sh` to copy standalone scripts into `<target>/.github/scripts/`.
-* Updated `scripts/validate-gbk-sqlite.py` and `scripts/check-links.py` to resolve schemas and roots relative to cwd and script locations dynamically.
-* Updated `skills/handoff` and `skills/resume` to resolve target repository roots dynamically via `git rev-parse --show-toplevel`.
-* Upgraded `skills/janitor` with dual-mode support (Central Hub Mode vs. Target Repo Mode) and absolute path scanning.
-* Added Check 9 to `.githooks/pre-commit` banning hardcoded `/Users/`, `/home/`, and `C:\` paths.
-* Replaced all `file:///home/...` links across repository documentation with clean relative markdown links.
-* Codified Relative-Path Portability Rule and Target Repository Mount Contract in `context/repo-governance-spec.md` and `README.md`.
-* Removed all redundant `.gitkeep` placeholder files (`state/.gitkeep`, `agents/.gitkeep`, `scripts/.gitkeep`, `skills/.gitkeep`, `memory/proposals/.gitkeep`).
+* Created meta-skills: `scaffold-domain` (governance-safe repository expansion) and `promote-memory` (empirical memory harvesting across projects).
+* Added core engineering rules: `rules/git-conventions.md` (Conventional Commits, atomic changes) and `rules/python-standards.md` (pyproject.toml, src/ layout, typing, ruff).
+* Added cross-stack skills: `skills/python-packaging-and-cli` and `skills/docker-and-reproducibility` (multi-stage Dockerfile and Apptainer/Singularity recipes).
+* Added specialized subagent: `agents/manuscript-reviewer.md` (academic editorial and computational reproducibility audit).
+* Created multi-repo fleet management tooling: `scripts/unlink-repo.sh`, `scripts/sync-all-repos.sh`, and `--register` flag in `scripts/link-repo.sh`.
+* Provided sanitized template `mcp.json.template` (secret-free MCP definitions) and added `mcp.json` to `.gitignore`.
+* Implemented GitHub Actions CI self-testing in `.github/workflows/validate-agents.yml` (JSON validation, `.githooks/pre-commit --all`, link checking, and smoke tests).
 
 ## Blockers / Failing Checks
-* None. All relative symlinks, pre-commit checks, and check-links validation passed with 0 errors.
+* None. Pre-commit (`--all`), link auditing (46 documents, 61 links), and all script `--help` checks pass with exit code 0.
 
 ## Next Concrete Action
-* Stage and commit changes (`git add .`), and mount into consumer projects (`PHANTOM`, `Pharos`, `kutzen.org`) via `./scripts/link-repo.sh /path/to/target`.
+* Stage and commit changes (`git add .`), or test multi-repo syncing against linked project environments.
 
 ## Modified Files
-* `scripts/link-repo.sh`, `scripts/validate-gbk-sqlite.py`
-* `skills/handoff/SKILL.md`, `skills/resume/SKILL.md`, `skills/janitor/SKILL.md`
-* `.githooks/pre-commit`
-* `context/repo-governance-spec.md`, `README.md`
+* `rules/git-conventions.md`, `rules/python-standards.md`
+* `skills/scaffold-domain/SKILL.md`, `skills/promote-memory/SKILL.md`
+* `skills/python-packaging-and-cli/SKILL.md`, `skills/docker-and-reproducibility/SKILL.md`
+* `agents/manuscript-reviewer.md`
+* `scripts/unlink-repo.sh`, `scripts/sync-all-repos.sh`, `scripts/link-repo.sh`
+* `mcp.json.template`, `.gitignore`, `.githooks/pre-commit`
+* `.github/workflows/validate-agents.yml`, `scripts/README.md`, `README.md`
 * `state/handoff.md`

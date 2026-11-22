@@ -6,6 +6,8 @@ utilities invoked by skills, automated workflows, and Git hooks.
 ## What Belongs Here vs. What Doesn't
 * **Belongs:** Deterministic repository tooling and cross-stack verification utilities:
   - Repository linking & mounting (`scripts/link-repo.sh`)
+  - Repository unlinking & mount teardown (`scripts/unlink-repo.sh`)
+  - Multi-repo fleet synchronization & audit (`scripts/sync-all-repos.sh`)
   - Antigravity lifecycle hook runner (`scripts/hook-handler.py`)
   - Database schema & sentinel verification (`scripts/validate-gbk-sqlite.py`)
   - Documentation & asset relative link auditing (`scripts/check-links.py`)

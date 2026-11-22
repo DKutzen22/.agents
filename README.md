@@ -81,10 +81,16 @@ The repository is organized into 7 canonical directories. Formal lifecycle speci
 * **[`context-and-memory-gates.md`](rules/context-and-memory-gates.md):** Mandates consulting schemas in `context/` and quirks in `memory/` before modifying database access or parsers.
 * **[`state-continuity.md`](rules/state-continuity.md):** Checks `state/handoff.md` before initiating multi-file edits or architecture plans.
 * **[`agents-repo-governance.md`](rules/agents-repo-governance.md):** Enforces lifecycle contracts, line limits (≤60 lines), and token discipline.
+* **[`git-conventions.md`](rules/git-conventions.md):** Enforces Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`), atomic changesets, descriptive PR summaries, and bans raw data files (>10MB).
+* **[`python-standards.md`](rules/python-standards.md):** Enforces modern Python packaging (`src/` layout, `pyproject.toml`), explicit type annotations, `pytest` unit suites, `ruff` linting, `pathlib.Path`, and deterministic seeds.
 
 ### 2. `skills/` (Domain Playbooks & Workflows)
 *Maintainer Guide: [`skills/README.md`](skills/README.md) | Trigger: Intent match or explicit `/<name>`*
 * **Domain Playbooks:**
+  - **[`scaffold-domain`](skills/scaffold-domain/SKILL.md):** Guided workflow for expanding `.agents` safely with new languages, tools, rules, and context specifications.
+  - **[`promote-memory`](skills/promote-memory/SKILL.md):** Periodic harvesting protocol for promoting empirical project quirks and decisions into central memory or rules.
+  - **[`python-packaging-and-cli`](skills/python-packaging-and-cli/SKILL.md):** Modern `src/` layout packaging, `pyproject.toml` metadata, `argparse`/`typer` CLI entrypoints, and `pytest` suites.
+  - **[`docker-and-reproducibility`](skills/docker-and-reproducibility/SKILL.md):** Multi-stage Dockerfiles, Apptainer/Singularity `.def` recipes for SLURM/HPC, and pinned lockfile environments.
   - **[`phage-annotation-parsers`](skills/phage-annotation-parsers/SKILL.md):** Output structures and qualifier mapping for **Pharokka**, **Phold**, and **Phynteny**, handling circular genomes, overlapping ORFs, and PHROG categories.
   - **[`snakemake-dryrun-and-dag`](skills/snakemake-dryrun-and-dag/SKILL.md):** Validation checklist, DAG/rulegraph SVG generation, and minimal phage test fixture design (`.test/data/`).
   - **[`r-pkg-ci-and-release`](skills/r-pkg-ci-and-release/SKILL.md):** Local R package verification cycle, semantic version bump protocols, and GitHub Actions `R-CMD-check` diagnostics.
@@ -97,6 +103,7 @@ The repository is organized into 7 canonical directories. Formal lifecycle speci
 * **[`shiny-ui-tester`](agents/shiny-ui-tester.md):** Automated headless UI test runner via `shinytest2` / `chromote` testing `.gbk` uploads, table filtering, and CSV/TSV exports.
 * **[`docs-and-vigilance-agent`](agents/docs-and-vigilance-agent.md):** Synchronizes `roxygen2` docs, `README.md`, `NEWS.md`, and Quarto vignettes after API or schema changes.
 * **[`ci-failure-triager`](agents/ci-failure-triager.md):** Parses failing GitHub Actions logs (R, Snakemake, Conda, Quarto) to isolate root causes and propose minimal diffs.
+* **[`manuscript-reviewer`](agents/manuscript-reviewer.md):** Specialized scientific editorial reviewer auditing computational reproducibility claims, figure captions, statistical precision, and terminology without altering code logic.
 
 ### 4. `context/` (Passive Reference Specifications)
 *Maintainer Guide: [`context/README.md`](context/README.md) | Access Mode: Read-only reference data (Nouns)*
@@ -122,6 +129,8 @@ The repository is organized into 7 canonical directories. Formal lifecycle speci
 ### 7. `scripts/` (Zero-Dependency CLI Utilities)
 *Maintainer Guide: [`scripts/README.md`](scripts/README.md) | Standard: POSIX `sh` or Python 3 stdlib only*
 * **[`link-repo.sh`](scripts/link-repo.sh):** Executable shell script mounting `.agents` into consumer repositories, creating portability symlinks, and generating IDE pointer entrypoints.
+* **[`unlink-repo.sh`](scripts/unlink-repo.sh):** Clean teardown utility removing shared symlinks and `.git/info/exclude` blocks while preserving repo-local state, memory, and local-rules.
+* **[`sync-all-repos.sh`](scripts/sync-all-repos.sh):** Fleet management script auditing (`--check`) or updating (`--refresh`) all registered consumer repositories listed in `${XDG_CONFIG_HOME:-$HOME/.config}/agents/linked-repos.txt`.
 * **[`hook-handler.py`](scripts/hook-handler.py):** Antigravity lifecycle hook runner enforcing real-time spec protection (`PreToolUse`), handoff line caps, and script syntax verification (`PostToolUse`).
 * **[`validate-gbk-sqlite.py`](scripts/validate-gbk-sqlite.py):** Verifies SQLite databases against canonical DDL, checking foreign keys, column presence, and sentinels.
 * **[`check-links.py`](scripts/check-links.py):** Scans Markdown and HTML files to verify that all relative local links and image assets exist on disk.
@@ -170,15 +179,41 @@ git config core.hooksPath .githooks
 
 ---
 
+## Machine Configuration & MCP Template
+
+A sanitized template for Model Context Protocol (MCP) server definitions is provided in [`mcp.json.template`](mcp.json.template):
+* **Filesystem MCP:** Configured with `${WORKSPACE_DIR}`.
+* **SQLite MCP:** Configured with `${DB_PATH}`.
+* **GitHub MCP:** Configured with `${GITHUB_TOKEN}`.
+* **Browser DevTools MCP:** Configured for local UI testing.
+
+To configure MCP servers on a new development workstation:
+```bash
+cp mcp.json.template ~/.gemini/antigravity/mcp.json
+# Or for project-local IDE usage (gitignored):
+cp mcp.json.template mcp.json
+```
+
+---
+
+## Continuous Integration Self-Testing
+
+The central `.agents` architecture is automatically validated via GitHub Actions in [`.github/workflows/validate-agents.yml`](.github/workflows/validate-agents.yml) on every push and pull request to `main`:
+1. **JSON & Manifest Parsing:** Validates `hooks.json`, `agents.json`, `rules.json`, `skills.json`, and `mcp.json.template` with `python3 -m json.tool`.
+2. **Full Repository Governance:** Executes `.githooks/pre-commit --all` to audit frontmatter, line limits, and verify zero machine-specific absolute paths.
+3. **Cross-Link Integrity:** Runs `scripts/check-links.py` to assert zero broken internal file references.
+4. **CLI Contract Verification:** Syntax-checks all shell and Python scripts and verifies `--help` execution.
+5. **End-to-End Mount & Teardown:** Executes `scripts/link-repo.sh` and `scripts/unlink-repo.sh` against an isolated Git fixture repository.
+
+---
+
 ## Frontmatter Quick Reference
 
 Every `rules/*.md` file uses:
 ```yaml
 ---
 trigger: glob
-globs:
-  - "workflow/**/*.smk"
-  - "config/*.yaml"
+globs: "workflow/**/*.smk, config/*.yaml"
 description: "Concise purpose statement"
 ---
 ```
@@ -197,6 +232,9 @@ Every `agents/*.md` uses:
 ---
 name: agent-name
 description: "Specialized review persona"
+subagent: true
+mainAgent: false
+model: "pro"  # "pro", "flash", or "flash_lite"
 tools:
   - read_file
   - run_command

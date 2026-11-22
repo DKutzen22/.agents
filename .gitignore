@@ -2,6 +2,10 @@
 .DS_Store
 Thumbs.db
 
+# Machine-Local MCP configuration (keep template tracked)
+mcp.json
+!mcp.json.template
+
 # Ephemeral Agent State (Transient Scratch Files)
 state/*.tmp.md
 state/scratch-*

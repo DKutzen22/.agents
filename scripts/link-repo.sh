@@ -17,6 +17,7 @@ Options:
   --force             Replace conflicting symlinks or non-protected directories
   --no-entrypoints    Skip generating root GEMINI.md and CLAUDE.md pointer files
   --ci-copy           Copy standalone CI scripts into <target>/.github/scripts/
+  --register          Register target path in ${XDG_CONFIG_HOME:-$HOME/.config}/agents/linked-repos.txt
   -h, --help          Show this help message and exit
 
 Symlink Topology Created:
@@ -40,6 +41,7 @@ EOF
 FORCE=0
 GEN_ENTRYPOINTS=1
 CI_COPY=0
+REGISTER=0
 TARGET=""
 
 while [ $# -gt 0 ]; do
@@ -58,6 +60,10 @@ while [ $# -gt 0 ]; do
             ;;
         --ci-copy)
             CI_COPY=1
+            shift
+            ;;
+        --register)
+            REGISTER=1
             shift
             ;;
         -*)
@@ -301,6 +307,18 @@ if ! grep -q '\.agents/state/\*\.tmp\.md' "$TARGET_GITIGNORE"; then
 .agents/state/scratch-*
 EOF
     echo "  ✓ Added .agents/state scratch patterns to target .gitignore"
+fi
+
+# 13. Optional repository registration in linked-repos.txt
+if [ "$REGISTER" -eq 1 ]; then
+    REG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/agents"
+    REG_FILE="$REG_DIR/linked-repos.txt"
+    mkdir -p "$REG_DIR"
+    touch "$REG_FILE"
+    if ! grep -q "^$TARGET_DIR\$" "$REG_FILE"; then
+        echo "$TARGET_DIR" >> "$REG_FILE"
+        echo "  ✓ Registered target in $REG_FILE"
+    fi
 fi
 
 echo "==> Done. Repository successfully mounted with clean relative symlinks."
