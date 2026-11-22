@@ -1,6 +1,6 @@
 name: synapse
 namespace: dkutzen22
-version: 1.0.0
+version: 1.1.0
 description: "High-throughput, memory-driven multi-agent framework featuring modular workflows, strict execution guardrails, and persistent context."
 license: MIT
 author: dkutzen22

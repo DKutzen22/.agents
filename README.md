@@ -52,7 +52,7 @@ targets:
 dependencies:
   apm:
     - git: https://github.com/dkutzen22/.agents
-      ref: v1.0.0
+      ref: v1.1.0
 ```
 
 Run `apm install` to fetch, verify with `apm.lock.yaml`, and compile the skills, rules, and configurations into the appropriate native paths (`.claude/`, `.cursor/`, `.github/`, `.gemini/`).
@@ -88,7 +88,7 @@ Every release published via GitHub Actions attaches a standardized `.zip` distri
 
 ```bash
 # Download and install pre-built release package
-apm install https://github.com/dkutzen22/.agents/releases/download/v1.0.0/synapse-v1.0.0.zip
+apm install https://github.com/dkutzen22/.agents/releases/download/v1.1.0/synapse-v1.1.0.zip
 ```
 
 ### Option 3: Local Monorepo & HPC Symlink Mount
@@ -290,7 +290,7 @@ The central Synapse architecture is automatically validated via GitHub Actions i
 
 This repository provides reproducible build scripts and continuous integration for packaging and releasing agent configurations:
 
-* **APM Manifest (`apm.yml`):** Specifies package metadata (`dkutzen22/synapse`), version (`1.0.0`), primitive directories, and target harnesses.
+* **APM Manifest (`apm.yml`):** Specifies package metadata (`dkutzen22/synapse`), version (`1.1.0`), primitive directories, and target harnesses.
 * **Line Ending Governance (`.gitattributes`):** Normalizes all text files to LF line endings (`eol=lf`) and marks binary/archive formats explicitly.
 * **Build Command (`make package`):** Cleans transient caches and calls [`scripts/package-synapse.sh`](scripts/package-synapse.sh) to assemble `dist/synapse-v<version>.zip` and calculate its SHA-256 checksum.
 * **Tag-Triggered CI/CD ([`.github/workflows/release.yml`](.github/workflows/release.yml)):** Automatically runs on semantic git tags (`v*.*.*`), validates `apm.yml`, executes pre-commit governance, compiles the distribution zip, and publishes a GitHub Release.
