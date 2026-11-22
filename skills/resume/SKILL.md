@@ -18,14 +18,16 @@ Resume an ongoing session with complete context continuity and zero guesswork.
 ### 1. Resolve Target Repo Root & Read Working State
 Always determine the target repository root first using git to ensure state isolation:
 ```bash
-REPO_ROOT=$(git rev-parse --show-toplevel)
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 cd "$REPO_ROOT"
 ```
 Read the project-local state files directly from `$REPO_ROOT`:
-- `$REPO_ROOT/.agents/state/handoff.md` (active session handoff state)
-- `$REPO_ROOT/.agents/state/active-roadmap.md` (milestone checklist)
+- **Primary (APM):** `$REPO_ROOT/.synapse/state.json` and `$REPO_ROOT/.synapse/handoff.md`
+- **Fallback (Legacy Mount):** `$REPO_ROOT/.agents/state/handoff.md` and `$REPO_ROOT/.agents/state/active-roadmap.md`
 
-**Never follow symlinks back to the central template files.**
+*If neither `.synapse/` nor `.agents/` state files exist, inform the user and suggest running `/synapse-init` to initialize project state.*
+
+**Never follow symlinks back to the central template files or write into `apm_modules/`.**
 
 ### 2. Inspect Workspace Git Status
 Run a concise git status check:

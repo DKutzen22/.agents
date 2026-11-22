@@ -40,10 +40,11 @@ echo "==> Running Janitor in $AUDIT_MODE mode at $REPO_ROOT"
 * **Manifests & Hooks:** Verify `hooks.json`, `rules.json`, `skills.json`, `agents.json` exist and contain valid JSON.
 
 #### B. Target Repo Mode Checks:
-* **Symlink Resolution:** Check that all relative symlinks in `.agents/` (`rules`, `skills`, `agents`, `context`, `scripts`, `hooks.json`, `rules.json`, `skills.json`, `agents.json`, `commands`) resolve to existing directories/files on disk (`test -e .agents/<item>`).
-* **Git Exclude Contract:** Verify `.git/info/exclude` contains the `# --- .agents global symlinks ---` block so mounts are never committed to target git history.
-* **Local Rules:** If `.agents/local-rules/` contains `.md` files, verify each has valid `globs:` frontmatter.
-* **Local State Hygiene:** Check `.agents/state/handoff.md` line count (≤50 lines, 6 mandatory headers) and prune completed milestones in `.agents/state/active-roadmap.md`.
+* **APM Workspace State (`.synapse/`):** If installed via APM, verify `.synapse/state.json` and `.synapse/handoff.md` exist and are valid. Check that `.synapse/handoff.md` line count is ≤50 lines with 6 mandatory headers.
+* **Symlink Resolution (Legacy Mount):** If mounted via `.agents/`, check that all relative symlinks (`rules`, `skills`, `agents`, `context`, `scripts`, `hooks.json`, `rules.json`, `skills.json`, `agents.json`, `commands`) resolve to existing directories/files on disk (`test -e .agents/<item>`).
+* **Git Exclude Contract:** Verify `.git/info/exclude` contains the `# --- .agents global symlinks ---` block (if mounted) so mounts are never committed to target git history.
+* **Local Rules:** If `.synapse/local-rules/` or `.agents/local-rules/` contains `.instructions.md` or `.md` files, verify each has valid `globs:` frontmatter.
+* **Local State Hygiene:** Prune completed milestones in `.synapse/active-roadmap.md` or `.agents/state/active-roadmap.md`.
 
 ### 3. Absolute Path Audit (Both Modes)
 Scan tracked repository files for hardcoded machine-specific absolute paths:

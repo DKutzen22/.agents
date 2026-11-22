@@ -72,7 +72,7 @@ for file in $STAGED_FILES; do
             # Check line length (allow grandfathered legacy rules)
             RULE_LINES=$(wc -l < "$file")
             case "$file" in
-                rules/bioinformatics-data-integrity.md|rules/shiny-and-sqlite.md|rules/snakemake-conventions.md)
+                rules/bioinformatics-data-integrity.*|rules/shiny-and-sqlite.*|rules/snakemake-conventions.*|rules/guardrails.*)
                     # Grandfathered rules
                     ;;
                 *)

@@ -142,18 +142,27 @@ def get_default_schema_path() -> Path:
     if resolved_parent.is_file():
         return resolved_parent
 
-    # 2. Check repo root .agents/context (handles scripts copied to .github/scripts/ via --ci-copy)
-    cwd_context = Path.cwd() / ".agents" / "context" / "sqlite-phage-schema.sql"
-    if cwd_context.is_file():
-        return cwd_context
+    # 2. Check repo root .synapse/context or .agents/context (handles APM modules and local mounts)
+    for candidate in [
+        Path.cwd() / "apm_modules" / "dkutzen22" / "synapse" / "context" / "sqlite-phage-schema.sql",
+        Path.cwd() / ".synapse" / "context" / "sqlite-phage-schema.sql",
+        Path.cwd() / ".agents" / "context" / "sqlite-phage-schema.sql",
+    ]:
+        if candidate.is_file():
+            return candidate
 
     # 3. Check git toplevel if available
     try:
         res = subprocess.run(["git", "rev-parse", "--show-toplevel"], capture_output=True, text=True)
         if res.returncode == 0:
-            git_context = Path(res.stdout.strip()) / ".agents" / "context" / "sqlite-phage-schema.sql"
-            if git_context.is_file():
-                return git_context
+            top = Path(res.stdout.strip())
+            for candidate in [
+                top / "apm_modules" / "dkutzen22" / "synapse" / "context" / "sqlite-phage-schema.sql",
+                top / ".synapse" / "context" / "sqlite-phage-schema.sql",
+                top / ".agents" / "context" / "sqlite-phage-schema.sql",
+            ]:
+                if candidate.is_file():
+                    return candidate
     except Exception:
         pass
 

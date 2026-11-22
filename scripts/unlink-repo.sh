@@ -76,7 +76,7 @@ fi
 echo "==> Unlinking central .agents from: $TARGET_DIR"
 
 # 1. Remove standard symlinks only (never touch real directories/files)
-SYMLINKS_TO_REMOVE="rules skills agents context scripts commands hooks.json rules.json skills.json agents.json"
+SYMLINKS_TO_REMOVE="rules prompts instructions skills agents context scripts commands hooks.json rules.json skills.json agents.json apm.yml"
 
 for item in $SYMLINKS_TO_REMOVE; do
     link_path="$TARGET_AGENTS/$item"

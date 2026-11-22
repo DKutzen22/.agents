@@ -12,7 +12,7 @@ Run the complete R package quality gate and triage results.
 
 > [!NOTE]
 > **Trigger:** Invoke directly via `/check-r-pkg` or ask to run R package checks/tests.  
-> **Standards:** [`rules/r-package-standards.md`](../../rules/r-package-standards.md)
+> **Standards:** [`rules/r-package-standards.instructions.md`](../../rules/r-package-standards.instructions.md)
 
 ## Steps
 

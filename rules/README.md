@@ -8,15 +8,13 @@ behavior when modifying specific files across the repository.
 * **Doesn't Belong:** Empirical third-party bug workarounds (move to `memory/bioinfo-tool-quirks.md`), step-by-step procedural playbooks (move to `skills/`), or passive DDL schemas (move to `context/`).
 
 ## File Naming & Starter Template
-Rules are named in `kebab-case.md` and should target ≤45 lines (hard cap 60 lines).
+Rules follow the APM instruction standard and are named `kebab-case.instructions.md`. They should target ≤45 lines (hard cap 60 lines).
 
 ```yaml
 ---
-trigger: glob
-globs:
-  - "**/*.R"
-  - "**/DESCRIPTION"
 description: Enforces explicit namespacing and roxygen2 documentation standards
+applyTo: "**/*.R, **/DESCRIPTION"
+globs: "**/*.R, **/DESCRIPTION"
 ---
 
 # Rule Title

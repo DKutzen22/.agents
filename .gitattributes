@@ -17,6 +17,8 @@ Makefile text eol=lf
 .gitattributes text eol=lf
 
 # Agent instructions, skills, rules, and documentation
+*.instructions.md text eol=lf
+*.prompt.md text eol=lf
 *.md text eol=lf
 *.txt text eol=lf
 

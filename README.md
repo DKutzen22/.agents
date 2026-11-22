@@ -42,9 +42,12 @@ name: my-phage-project
 version: 0.1.0
 
 targets:
+  - antigravity
+  - agent-skills
   - claude
   - cursor
   - copilot
+  - gemini
 
 dependencies:
   apm:
@@ -52,7 +55,32 @@ dependencies:
       ref: v1.0.0
 ```
 
-Run `apm install` to fetch, verify with `apm.lock.yaml`, and compile the skills, rules, and configurations into the appropriate native paths (`.claude/`, `.cursor/`, `.github/`).
+Run `apm install` to fetch, verify with `apm.lock.yaml`, and compile the skills, rules, and configurations into the appropriate native paths (`.claude/`, `.cursor/`, `.github/`, `.gemini/`).
+
+### Post-Install Workspace Architecture & State Isolation
+
+When installing Synapse via APM:
+1. **Immutable Source Cache (`apm_modules/dkutzen22/synapse/`):**
+   APM places the raw, versioned Synapse package inside `apm_modules/dkutzen22/synapse/`. This directory is content-addressed, strictly read-only, and should never be modified.
+2. **Native Harness Compilation:**
+   APM compiles and projects Synapse's primitives directly into your configured target harness directories:
+   * **Antigravity / Agent Skills:** Projected into `rules/` and `skills/` with native manifest discovery.
+   * **GitHub Copilot:** Deploys instructions to `.github/copilot-instructions.md` and prompts to `.github/prompts/*.prompt.md`.
+   * **Claude Code:** Deploys slash commands into `.claude/commands/` and memory guidelines.
+   * **Cursor:** Compiles scoped instruction rules into `.cursor/rules/*.mdc`.
+   * **Gemini CLI:** Generates TOML prompt manifests under `.gemini/commands/`.
+3. **Initialize Mutable Project State (`/synapse-init`):**
+   To keep your project's working memory separate from the immutable package cache, initialize local project state on first run:
+   ```bash
+   # Run the initialization command in your agent chat:
+   /synapse-init
+   ```
+   This scaffolds the `.synapse/` workspace directory:
+   * `.synapse/state.json`: Machine-readable session ledger tracking active objectives, blockers, and next actions.
+   * `.synapse/context.md`: Project-specific technical context and active schemas.
+   * `.synapse/handoff.md`: Inter-session handoff summary.
+   * `.synapse/memory/`: Local append-only architectural decisions (`project-decisions.md`) and tool quirks (`project-quirks.md`).
+   * `.synapse/local-rules/`: Project-specific instruction overrides.
 
 ### Option 2: Pre-Packaged Release Archive (.zip)
 
@@ -90,6 +118,7 @@ These commands live as unified skills in `skills/<name>/SKILL.md` and autocomple
 
 | Command | Purpose | When to Use |
 |---|---|---|
+| **`/synapse-init`** | Workspace State Init | Run once after `apm install` to scaffold local mutable `.synapse/` state, context, and memory. |
 | **`/resume`** | Session Continuity | Run at the start of every session to review current blockers, modified files, and queued next actions. |
 | **`/handoff`** | Session Closure | Run before ending a work session to cleanly package progress into `state/handoff.md` and update milestones. |
 | **`/janitor`** | Repo Governance Audit | Audits frontmatter, checks line limits, validates internal links, and verifies repo health. |
@@ -102,34 +131,36 @@ These commands live as unified skills in `skills/<name>/SKILL.md` and autocomple
 
 ## Directory Architecture & Core Capabilities
 
-The repository is organized into 7 canonical directories. Formal lifecycle specifications are codified in [`context/repo-governance-spec.md`](context/repo-governance-spec.md).
+The repository is organized into canonical primitives conforming to APM and Antigravity specifications. Formal lifecycle specifications are codified in [`context/repo-governance-spec.md`](context/repo-governance-spec.md).
 
 ```text
-.agents/
-├── rules/        # Always-on guardrails auto-triggered by file globs
-├── skills/       # Unified home for domain playbooks and callable /workflows
+synapse/
+├── rules/        # APM *.instructions.md guardrails auto-triggered by globs/applyTo
+├── prompts/      # APM *.prompt.md parameter-driven workflows & slash commands
+├── skills/       # Modular skills (<skill-name>/SKILL.md) for Antigravity & Agent Skills
 ├── agents/       # Isolated subagent definitions with restricted tool grants
-├── context/      # Passive reference data (DDL schemas, format lookups, HPC tiers)
-├── memory/       # Append-only empirical scar tissue, tool quirks, and ADRs
-├── state/        # Ephemeral working memory (handoff state & roadmap checklist)
+├── context/      # Canonical reference specifications (DDL schemas, format lookups, HPC tiers)
+├── memory/       # Central append-only scar tissue, tool quirks, and ADRs
+├── state/        # Ephemeral working memory templates
 ├── scripts/      # Zero-dependency utilities (POSIX sh, Python 3 stdlib)
+├── apm.yml       # APM package manifest declaring targets, primitives, and entrypoints
 ├── hooks.json    # Native lifecycle hooks (PreToolUse/PostToolUse governance)
 ├── rules.json    # Antigravity rule discovery manifest
 ├── skills.json   # Antigravity skill discovery manifest
 └── agents.json   # Antigravity subagent discovery manifest
 ```
 
-### 1. `rules/` (Always-On Guardrails)
-*Maintainer Guide: [`rules/README.md`](rules/README.md) | Trigger: Automatic via file globs*
-* **[`bioinformatics-data-integrity.md`](rules/bioinformatics-data-integrity.md):** Bans hardcoded absolute paths and accession IDs; enforces random seeds; mandates defensive parsing for `.gbk`, `.gff3`, and `.fasta`; bans hardcoded `NCBI_API_KEY` tokens and HPC cluster user scratch paths (`/scratch/<user>`, `/lustre/...`).
-* **[`r-package-standards.md`](rules/r-package-standards.md):** Enforces explicit `pkg::fun()` namespacing (zero `library()` calls in `R/`), `roxygen2` documentation on exported functions, `testthat` 3rd edition, and `styler`/`lintr` compliance.
-* **[`shiny-and-sqlite.md`](rules/shiny-and-sqlite.md):** Enforces Shiny module `NS(id)` isolation, parameterized queries (`DBI::dbBind` / `glue::glue_sql`), and physical separation of pure database query functions from reactive observers.
-* **[`snakemake-conventions.md`](rules/snakemake-conventions.md):** Enforces per-rule `conda:`/`container:` directives with pinned package versions, `log:` and `benchmark:` paths, `temp()` intermediate management, and SLURM-ready `resources:` tiers.
-* **[`context-and-memory-gates.md`](rules/context-and-memory-gates.md):** Mandates consulting schemas in `context/` and quirks in `memory/` before modifying database access or parsers.
-* **[`state-continuity.md`](rules/state-continuity.md):** Checks `state/handoff.md` before initiating multi-file edits or architecture plans.
-* **[`agents-repo-governance.md`](rules/agents-repo-governance.md):** Enforces lifecycle contracts, line limits (≤60 lines), and token discipline.
-* **[`git-conventions.md`](rules/git-conventions.md):** Enforces Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`), atomic changesets, descriptive PR summaries, and bans raw data files (>10MB).
-* **[`python-standards.md`](rules/python-standards.md):** Enforces modern Python packaging (`src/` layout, `pyproject.toml`), explicit type annotations, `pytest` unit suites, `ruff` linting, `pathlib.Path`, and deterministic seeds.
+### 1. `rules/` (Always-On Guardrails & Instructions)
+*Maintainer Guide: [`rules/README.md`](rules/README.md) | Trigger: Automatic via `applyTo` / `globs`*
+* **[`guardrails.instructions.md`](rules/guardrails.instructions.md):** Bans hardcoded absolute paths and accession IDs; enforces random seeds; mandates defensive parsing for `.gbk`, `.gff3`, and `.fasta`; bans hardcoded `NCBI_API_KEY` tokens and HPC cluster user scratch paths (`/scratch/<user>`, `/lustre/...`).
+* **[`r-package-standards.instructions.md`](rules/r-package-standards.instructions.md):** Enforces explicit `pkg::fun()` namespacing (zero `library()` calls in `R/`), `roxygen2` documentation on exported functions, `testthat` 3rd edition, and `styler`/`lintr` compliance.
+* **[`shiny-and-sqlite.instructions.md`](rules/shiny-and-sqlite.instructions.md):** Enforces Shiny module `NS(id)` isolation, parameterized queries (`DBI::dbBind` / `glue::glue_sql`), and physical separation of pure database query functions from reactive observers.
+* **[`snakemake-conventions.instructions.md`](rules/snakemake-conventions.instructions.md):** Enforces per-rule `conda:`/`container:` directives with pinned package versions, `log:` and `benchmark:` paths, `temp()` intermediate management, and SLURM-ready `resources:` tiers.
+* **[`memory-protocol.instructions.md`](rules/memory-protocol.instructions.md):** Mandates consulting schemas in `context/` and quirks in `memory/` before modifying database access or parsers.
+* **[`state-continuity.instructions.md`](rules/state-continuity.instructions.md):** Checks `.synapse/state.json` / `.synapse/handoff.md` before initiating multi-file edits or architecture plans.
+* **[`synapse-governance.instructions.md`](rules/synapse-governance.instructions.md):** Enforces lifecycle contracts, line limits (≤60 lines), and token discipline across all Synapse components.
+* **[`git-conventions.instructions.md`](rules/git-conventions.instructions.md):** Enforces Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`), atomic changesets, descriptive PR summaries, and bans raw data files (>10MB).
+* **[`python-standards.instructions.md`](rules/python-standards.instructions.md):** Enforces modern Python packaging (`src/` layout, `pyproject.toml`), explicit type annotations, `pytest` unit suites, `ruff` linting, `pathlib.Path`, and deterministic seeds.
 
 ### 2. `skills/` (Domain Playbooks & Workflows)
 *Maintainer Guide: [`skills/README.md`](skills/README.md) | Trigger: Intent match or explicit `/<name>`*

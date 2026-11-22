@@ -16,14 +16,15 @@ Hygiene workflow for harvesting empirical tool quirks and architectural patterns
 Scan registered project repositories for local decision and quirk files:
 ```bash
 # Using sync-all-repos registry or active target:
-REPO_ROOT=$(git rev-parse --show-toplevel)
-cat "$REPO_ROOT/.agents/memory/project-quirks.md"
-cat "$REPO_ROOT/.agents/memory/project-decisions.md"
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+# Check APM native .synapse/memory or legacy .agents/memory:
+cat "$REPO_ROOT/.synapse/memory/project-quirks.md" 2>/dev/null || cat "$REPO_ROOT/.agents/memory/project-quirks.md" 2>/dev/null || true
+cat "$REPO_ROOT/.synapse/memory/project-decisions.md" 2>/dev/null || cat "$REPO_ROOT/.agents/memory/project-decisions.md" 2>/dev/null || true
 ```
 
 ### 2. Evaluate Promotion Criteria (The 2-Project Rule)
 Evaluate candidate entries against generalizability criteria:
-- **Project-Specific (Leave in Target):** Local dataset quirks, single-use server URLs, or repository-specific workarounds stay in `<target>/.agents/memory/`.
+- **Project-Specific (Leave in Target):** Local dataset quirks, single-use server URLs, or repository-specific workarounds stay in `<target>/.synapse/memory/` (or `<target>/.agents/memory/`).
 - **Generalizable (Promote to Central Memory):** Tool bugs (e.g., Foldseek memory spikes, RSQLite locking, Biopython parser edge cases) appearing across ≥2 repositories or representing universal failure modes.
 - **Rule Candidates (Promote to Rules):** Invariants that are deterministically enforceable via linters or AST checks (must keep target rule ≤45 lines).
 

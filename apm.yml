@@ -7,15 +7,21 @@ author: dkutzen22
 repository: https://github.com/dkutzen22/.agents
 
 targets:
-  - gemini
   - antigravity
+  - agent-skills
   - claude
   - cursor
   - copilot
-  - agent-skills
+  - gemini
+
+entrypoints:
+  init: prompts/synapse-init.prompt.md
+  resume: prompts/resume.prompt.md
+  handoff: prompts/handoff.prompt.md
 
 primitives:
-  rules: rules
+  instructions: rules
+  prompts: prompts
   skills: skills
   agents: agents
   hooks: hooks.json
@@ -23,6 +29,17 @@ primitives:
 
 keywords:
   - agent-package
+  - multi-agent
+  - workflow-orchestration
+  - guardrails
+  - memory-management
+  - persistent-context
+  - antigravity
+  - claude-code
+  - cursor
+  - github-copilot
+  - gemini-cli
+  - agent-skills
   - bioinformatics
   - phage
   - snakemake
@@ -30,12 +47,5 @@ keywords:
   - shiny
   - sqlite
   - quarto
-  - claude-code
-  - cursor
-  - github-copilot
-  - multi-agent
-  - workflow-orchestration
-  - guardrails
-  - memory-management
   - apm
   - system-instructions
