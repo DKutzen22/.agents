@@ -9,7 +9,7 @@ globs: "**/*"
 
 ## Strict Relative-Path Requirement
 To guarantee multi-repo interoperability across diverse workstations, CI runners, and mounted workspaces:
-1. **No Machine-Specific Absolute Paths:** Never commit or write `/Users/...`, `/home/...`, or `C:\...` paths into rules, skills, configs, manifests, or docs.
+1. **No Machine-Specific Absolute Paths:** Never commit or write `/Users/...`, `/home/...`, or `C:\...` paths into rules, skills, configs, manifests, or docs. # allow-path
 2. **Dynamic Root Resolution:**
    - Resolve workspace roots dynamically via `git rev-parse --show-toplevel 2>/dev/null || pwd`.
    - Helper scripts must resolve internal paths relative to their own file location via `pathlib.Path(__file__).resolve().parent`.

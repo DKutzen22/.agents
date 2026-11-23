@@ -136,7 +136,7 @@ targets:
 dependencies:
   apm:
     - git: https://github.com/dkutzen22/synapse
-      ref: v1.1.0
+      ref: v2.0.0
 ```
 
 Run `apm install` to fetch, verify with `apm.lock.yaml`, and compile the skills, rules, and configurations into the appropriate native paths (`.claude/`, `.cursor/`, `.github/`, `.gemini/`).
@@ -170,7 +170,7 @@ When installing Synapse via APM:
 Every release published via GitHub Actions attaches a standardized `.zip` distribution bundle and SHA-256 checksum:
 
 ```bash
-apm install https://github.com/dkutzen22/synapse/releases/download/v1.1.0/synapse-v1.1.0.zip
+apm install https://github.com/dkutzen22/synapse/releases/download/v2.0.0/synapse-v2.0.0.zip
 ```
 
 ### Option 3: Local Monorepo & Symlink Mount
@@ -293,14 +293,15 @@ synapse/
 To standardize AI memory and state tracking across your repositories, run [`scripts/link-repo.sh`](scripts/link-repo.sh) to mount Synapse:
 
 ```bash
-./scripts/link-repo.sh /path/to/target-repo
+./scripts/link-repo.sh ~/projects/my-project
 ```
 
 ### What `link-repo.sh` Does:
 1. **Dynamic Relative Symlinks:** Computes the relative offset from `<target>/.agents` back to the central repository and creates strictly relative symlinks for `instructions`, `skills`, `agents`, `context`, `scripts`, `hooks.json`, and discovery manifests (`rules.json`, `skills.json`, `agents.json`, `apm.yml`). Zero hardcoded absolute paths.
-2. **Clean Git Exclusion (`.git/info/exclude`):** Idempotently appends all global symlinks to the target's `.git/info/exclude`, ensuring mount artifacts never pollute `<target>`'s git status or commit history.
+2. **Clean Git Exclusion (`.git/info/exclude`):** Idempotently appends all global symlinks and Tier 2 memory files to the target's `.git/info/exclude`, ensuring mount artifacts never pollute `<target>`'s git status or commit history.
 3. **Local Rules Directory (`local-rules/`):** Initializes `.agents/local-rules/` for project-specific rules, which are tracked in target git and guaranteed to survive `link-repo.sh --force`.
-5. **Initializes Local State & Memory:** Copies clean starter templates for `state/handoff.md`, `state/active-roadmap.md`, `memory/project-decisions.md`, and `memory/project-quirks.md`.
+4. **Initializes Local State & Memory:** Copies clean starter templates for `state/handoff.md`, `state/active-roadmap.md`, `memory/project-decisions.md`, and `memory/project-quirks.md`.
+5. **Tier 2 Memory Symlinks:** Creates relative symlinks for `memory/user-profile.md` and `memory/anti-patterns.md` back to the central repository.
 6. **Generates Root IDE Entrypoints:** Creates lightweight pointer files (`GEMINI.md` and `CLAUDE.md`) in `<target>/` instructing any agent to follow `.agents` rules and local rules.
 7. **Optional Standalone CI Scripts (`--ci-copy`):** Copies `check-links.py` into `<target>/.github/scripts/` so GitHub Actions workflows run independently of local symlinks.
 8. **Updates Gitignore:** Appends `.agents/state/*.tmp.md` and scratch patterns to the target repo's `.gitignore`.
@@ -361,7 +362,7 @@ The central Synapse architecture is automatically validated via GitHub Actions i
 
 This repository provides reproducible build scripts and continuous integration for packaging and releasing agent configurations:
 
-* **APM Manifest (`apm.yml`):** Specifies package metadata (`dkutzen22/synapse`), version (`1.1.0`), primitive directories, and target harnesses.
+* **APM Manifest (`apm.yml`):** Specifies package metadata, version (`2.0.0`), primitive directories, and target harnesses.
 * **Line Ending Governance (`.gitattributes`):** Normalizes all text files to LF line endings (`eol=lf`) and marks binary/archive formats explicitly.
 * **Build Command (`make package`):** Cleans transient caches and calls [`scripts/package-synapse.sh`](scripts/package-synapse.sh) to assemble `dist/synapse-v<version>.zip` and calculate its SHA-256 checksum.
 * **Tag-Triggered CI/CD ([`.github/workflows/release.yml`](.github/workflows/release.yml)):** Automatically runs on semantic git tags (`v*.*.*`), validates `apm.yml`, executes pre-commit governance, compiles the distribution zip, and publishes a GitHub Release.

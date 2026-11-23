@@ -3,6 +3,10 @@
 This directory contains passive reference specifications, canonical schemas,
 and repository governance definitions.
 
+## Active Specifications
+* [`repo-governance-spec.md`](./repo-governance-spec.md): Formal structural specifications, folder contracts, lifecycle rules, and symlink topology.
+* [`index.md`](./index.md): Master index of canonical reference specifications.
+
 ## What Belongs Here vs. What Doesn't
 * **Belongs:** Single sources of truth and technical reference data (e.g. `repo-governance-spec.md`, project schemas).
 * **Doesn't Belong:** Imperative agent instructions ("You must", "Always run", "Step 1:"), procedural checklists (move to `skills/`), or transient state (move to `state/`).

@@ -3,24 +3,21 @@
 ## Active Repo & Branch
 * **Repo:** Synapse (`.agents`)
 * **Branch:** `main`
-* **Last Updated:** 2026-11-23 12:38
+* **Last Updated:** 2026-11-23 13:16
 
 ## Current Objective
-* Implement Fork-Ready Core vs. Personal Overlay Architecture for external distribution.
+* Release v2.0.0 of Synapse: bump version, synchronize documentation, tag, and push.
 
 ## Completed This Session
-* Converted personal memory files into clean starter templates in `main` (`memory/*.template.md`) and added `memory/archive/.gitkeep`.
-* Updated `scripts/link-repo.sh` and `skills/synapse-init/SKILL.md` to automatically hydrate missing memory files from templates.
-* Updated `skills/synapse-init/SKILL.md` to auto-detect fork owner from `git remote get-url origin` and update `apm.yml`.
-* Updated `skills/promote-memory/SKILL.md` to target the user's own fork origin rather than upstream.
-* Added fork-safe primitive scaffolding (`scope: core` vs. `scope: personal`) to `agents/architect.md` and `skills/scaffold/SKILL.md`.
-* Documented the Two-Branch Maintainer Workflow and 4-Step Fork & Install Quickstart in `README.md`.
+* Bumped framework package version to `2.0.0` in `apm.yml`, `README.md`, and `skills/synapse-init/SKILL.md`.
+* Synchronized all directory READMEs to match the current fork-ready, multi-agent architecture.
+* Verified schema validation, link auditing (83 links passed), pre-commit governance, and package building.
 
 ## Blockers / Failing Checks
-* None. Ready for complete verification.
+* None. Ready to commit, tag v2.0.0, and push.
 
 ## Next Concrete Action
-* Run `make validate`, `make test`, and `make package` to assert governance and link integrity.
+* Commit all staged changes, tag `v2.0.0`, and push to remote.
 
 ## Modified Files
-* `memory/*.template.md`, `memory/archive/.gitkeep`, `.gitignore`, `apm.yml`, `scripts/link-repo.sh`, `skills/synapse-init/SKILL.md`, `skills/promote-memory/SKILL.md`, `skills/scaffold/SKILL.md`, `agents/architect.md`, `memory/README.md`, `context/repo-governance-spec.md`, `README.md`, `state/handoff.md`
+* `apm.yml`, `README.md`, `skills/synapse-init/SKILL.md`, `state/handoff.md`, `agents/README.md`, `context/README.md`, `instructions/README.md`, `instructions/portable-path.instructions.md`, `scripts/README.md`, `skills/README.md`, `state/README.md`

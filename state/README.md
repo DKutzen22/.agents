@@ -14,7 +14,7 @@ Files in this directory are **overwrite-only** or actively pruned. They must not
 # Session Handoff State
 
 ## Active Repo & Branch
-* **Repo:** /path/to/repo
+* **Repo:** my-project
 * **Branch:** main
 
 ## Current Objective

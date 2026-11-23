@@ -11,7 +11,7 @@ utilities invoked by skills, automated workflows, and Git hooks.
   - Antigravity lifecycle hook runner (`scripts/hook-handler.py`)
   - Documentation & asset relative link auditing (`scripts/check-links.py`)
   - Synapse APM distribution packaging & archive generation (`scripts/package-synapse.sh`)
-* **Doesn't Belong:** Project-specific bioinformatics analysis pipelines, Snakemake execution logic, or Shiny server code (those belong in their respective consumer repositories).
+* **Doesn't Belong:** Application-specific build pipelines, database migrations, or web server code (those belong in their respective consumer repositories).
 
 ## Zero-Dependency Contract
 Every script in this directory must run without requiring virtual environments or package installations:
@@ -23,5 +23,5 @@ Every script in this directory must run without requiring virtual environments o
    - Scripts must have executable permissions (`chmod +x`).
 
 ## How & When Agents Touch These Files
-* Agents invoke these scripts during workflow execution (`/janitor`, `/verify-site-links`, schema audits).
+* Agents invoke these scripts during workflow execution (`/janitor`, `/doctor`, `/scaffold`, or Git pre-commit hooks).
 * `scripts/link-repo.sh` is executed when initializing or refreshing `.agents` in target projects.

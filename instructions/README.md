@@ -19,6 +19,7 @@ Rules follow the APM instruction standard and are named `kebab-case.instructions
 description: Concise purpose statement
 applyTo: "src/**, lib/**, pkg/**"
 globs: "src/**, lib/**, pkg/**"
+scope: core  # or "personal"
 ---
 
 # Rule Title

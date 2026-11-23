@@ -86,7 +86,7 @@ Write the canonical JSON state ledger:
 ```json
 {
   "framework": "synapse",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "initialized_at": "2026-11-21T21:30:00Z",
   "last_session": "2026-11-21T21:30:00Z",
   "objective": "Project initialization and environment setup",
