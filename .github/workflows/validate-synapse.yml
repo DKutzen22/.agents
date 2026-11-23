@@ -56,7 +56,6 @@ jobs:
           ./scripts/link-repo.sh --help > /dev/null
           ./scripts/unlink-repo.sh --help > /dev/null
           ./scripts/sync-all-repos.sh --help > /dev/null
-          python3 scripts/validate-gbk-sqlite.py --help > /dev/null
           python3 scripts/check-links.py --help > /dev/null
           python3 scripts/hook-handler.py --help > /dev/null
           echo "✓ All script syntax and CLI contracts verified."
@@ -91,7 +90,7 @@ jobs:
 
           # 4. Verify unlinking tears down mounts while preserving state
           ./scripts/unlink-repo.sh "$TEST_TARGET"
-          test ! -L "$TEST_TARGET/.agents/rules"
+          test ! -L "$TEST_TARGET/.agents/instructions"
           test ! -L "$TEST_TARGET/.agents/skills"
           test -f "$TEST_TARGET/.agents/state/handoff.md"
           test -f "$TEST_TARGET/.agents/memory/project-decisions.md"

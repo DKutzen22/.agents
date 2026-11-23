@@ -10,11 +10,24 @@ mcp.json
 state/*.tmp.md
 state/scratch-*
 state/tmp/
+state/pattern-buffer.jsonl
+state/*.jsonl
+state/.hook-*
+.synapse/state/pattern-buffer.jsonl
+.synapse/state/*.jsonl
+.agents/state/pattern-buffer.jsonl
+.agents/state/*.jsonl
 
 # Keep Template State Files Tracked
 !state/handoff.md
 !state/active-roadmap.md
 !state/.gitkeep
+
+# Ephemeral / Hydrated Local Memory (Templates tracked in main; personal memory tracked on personal branch)
+memory/*.md
+!memory/README.md
+!memory/*.template.md
+!memory/archive/README.md
 
 # Python / Environment Artifacts
 __pycache__/

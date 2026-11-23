@@ -18,7 +18,8 @@ Options:
 
 Items Removed:
   - Symlinks: rules, skills, agents, context, scripts, commands,
-              hooks.json, rules.json, skills.json, agents.json
+              hooks.json, rules.json, skills.json, agents.json, apm.yml,
+              memory/user-profile.md, memory/anti-patterns.md
   - Git exclude block in <target>/.git/info/exclude
 
 Items Preserved (Untouched):
@@ -85,6 +86,17 @@ for item in $SYMLINKS_TO_REMOVE; do
         echo "  ✓ Removed symlink .agents/$item"
     fi
 done
+
+# Remove Tier 2 memory symlinks if present
+if [ -d "$TARGET_AGENTS/memory" ]; then
+    for mf in user-profile.md anti-patterns.md; do
+        link_path="$TARGET_AGENTS/memory/$mf"
+        if [ -L "$link_path" ]; then
+            rm -f "$link_path"
+            echo "  ✓ Removed symlink .agents/memory/$mf"
+        fi
+    done
+fi
 
 # Check for any remaining dangling symlinks inside .agents
 for item in "$TARGET_AGENTS"/*; do

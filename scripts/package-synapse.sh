@@ -140,7 +140,6 @@ zip -r -q "$ARCHIVE_PATH" \
     hooks.json \
     mcp.json.template \
     instructions/ \
-    prompts/ \
     skills/ \
     agents/ \
     context/ \

@@ -10,6 +10,7 @@ Zero external dependencies: Python 3 standard library only.
 """
 
 import argparse
+import datetime
 import json
 import os
 import pathlib
@@ -81,10 +82,129 @@ def handle_pre_tool_use(payload):
     return {"decision": "allow"}
 
 
+def resolve_state_dir(cwd):
+    base = pathlib.Path(cwd) if cwd else pathlib.Path.cwd()
+    candidates = [
+        base / ".synapse" / "state",
+        base / ".agents" / "state",
+        base / "state",
+    ]
+    for c in candidates:
+        if c.is_dir():
+            return c
+    if (base / ".synapse").is_dir():
+        d = base / ".synapse" / "state"
+        d.mkdir(parents=True, exist_ok=True)
+        return d
+    d = base / "state"
+    d.mkdir(parents=True, exist_ok=True)
+    return d
+
+
+def record_passive_telemetry(payload, cwd):
+    """Passively detects recovery after failure and repeated action patterns."""
+    tool_call = payload.get("toolCall", {})
+    tool_name = tool_call.get("name") or payload.get("tool") or ""
+    args = tool_call.get("args", {})
+    tool_result = payload.get("toolResult") or payload.get("result") or {}
+
+    target_key = (
+        args.get("Path")
+        or args.get("path")
+        or args.get("CommandLine")
+        or args.get("command")
+        or args.get("script")
+        or ""
+    )
+    if not target_key:
+        return
+
+    is_failure = False
+    if isinstance(tool_result, dict):
+        if tool_result.get("isError") is True or bool(tool_result.get("error")):
+            is_failure = True
+        elif tool_result.get("exitCode", 0) not in (0, None):
+            is_failure = True
+    elif isinstance(tool_result, str):
+        if "error" in tool_result.lower() and "traceback" in tool_result.lower():
+            is_failure = True
+
+    state_dir = resolve_state_dir(cwd)
+    session_file = state_dir / ".hook-session-state.json"
+    buffer_file = state_dir / "pattern-buffer.jsonl"
+
+    session_data = {"recent_failures": {}, "action_counts": {}}
+    if session_file.is_file():
+        try:
+            with open(session_file, "r", encoding="utf-8") as f:
+                session_data = json.load(f)
+        except Exception:
+            session_data = {"recent_failures": {}, "action_counts": {}}
+
+    recent_failures = session_data.get("recent_failures", {})
+    action_counts = session_data.get("action_counts", {})
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    events_to_log = []
+
+    action_id = f"{tool_name}:{target_key}"
+    if not is_failure and recent_failures.get(action_id):
+        events_to_log.append(
+            {
+                "timestamp": now_iso,
+                "type": "recovery",
+                "category": tool_name,
+                "detail": f"Recovered from failure on {target_key}",
+            }
+        )
+        recent_failures.pop(action_id, None)
+    elif is_failure:
+        recent_failures[action_id] = True
+
+    count_key = target_key.strip()
+    if tool_name == "run_command" and len(count_key) > 80:
+        count_key = count_key[:80] + "..."
+
+    current_count = action_counts.get(count_key, 0) + 1
+    action_counts[count_key] = current_count
+
+    if current_count == 2 or (current_count > 2 and current_count % 3 == 0):
+        events_to_log.append(
+            {
+                "timestamp": now_iso,
+                "type": "repetition",
+                "category": tool_name,
+                "detail": f"Repeated action: {count_key} ({current_count}x in session)",
+            }
+        )
+
+    if events_to_log:
+        try:
+            with open(buffer_file, "a", encoding="utf-8") as f:
+                for ev in events_to_log:
+                    f.write(json.dumps(ev) + "\n")
+        except Exception as e:
+            sys.stderr.write(f"[HOOK WARNING] Could not append to pattern-buffer.jsonl: {e}\n")
+
+    session_data["recent_failures"] = recent_failures
+    session_data["action_counts"] = action_counts
+    try:
+        with open(session_file, "w", encoding="utf-8") as f:
+            json.dump(session_data, f)
+    except Exception:
+        pass
+
+
 def handle_post_tool_use(payload):
+    cwd = payload.get("cwd") or str(pathlib.Path.cwd())
+
+    # Passively record telemetry events
+    try:
+        record_passive_telemetry(payload, cwd)
+    except Exception as e:
+        sys.stderr.write(f"[HOOK WARNING] Telemetry error: {e}\n")
+
     tool_call = payload.get("toolCall", {})
     args = tool_call.get("args", {})
-    cwd = payload.get("cwd") or str(pathlib.Path.cwd())
     raw_path = args.get("Path") or args.get("path") or ""
 
     if not raw_path:

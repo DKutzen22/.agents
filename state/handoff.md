@@ -3,32 +3,24 @@
 ## Active Repo & Branch
 * **Repo:** Synapse (`.agents`)
 * **Branch:** `main`
-* **Last Updated:** 2026-11-21 17:08
+* **Last Updated:** 2026-11-23 12:38
 
 ## Current Objective
-* Multi-domain AI engineering hub expansion: meta-skills, packaging, containerization, fleet management, and CI self-testing.
+* Implement Fork-Ready Core vs. Personal Overlay Architecture for external distribution.
 
 ## Completed This Session
-* Created meta-skills: `scaffold-domain` (governance-safe repository expansion) and `promote-memory` (empirical memory harvesting across projects).
-* Added core engineering rules: `rules/git-conventions.md` (Conventional Commits, atomic changes) and `rules/python-standards.md` (pyproject.toml, src/ layout, typing, ruff).
-* Added cross-stack skills: `skills/python-packaging-and-cli` and `skills/docker-and-reproducibility` (multi-stage Dockerfile and Apptainer/Singularity recipes).
-* Added specialized subagent: `agents/manuscript-reviewer.md` (academic editorial and computational reproducibility audit).
-* Created multi-repo fleet management tooling: `scripts/unlink-repo.sh`, `scripts/sync-all-repos.sh`, and `--register` flag in `scripts/link-repo.sh`.
-* Provided sanitized template `mcp.json.template` (secret-free MCP definitions) and added `mcp.json` to `.gitignore`.
-* Implemented GitHub Actions CI self-testing in `.github/workflows/validate-agents.yml` (JSON validation, `.githooks/pre-commit --all`, link checking, and smoke tests).
+* Converted personal memory files into clean starter templates in `main` (`memory/*.template.md`) and added `memory/archive/.gitkeep`.
+* Updated `scripts/link-repo.sh` and `skills/synapse-init/SKILL.md` to automatically hydrate missing memory files from templates.
+* Updated `skills/synapse-init/SKILL.md` to auto-detect fork owner from `git remote get-url origin` and update `apm.yml`.
+* Updated `skills/promote-memory/SKILL.md` to target the user's own fork origin rather than upstream.
+* Added fork-safe primitive scaffolding (`scope: core` vs. `scope: personal`) to `agents/architect.md` and `skills/scaffold/SKILL.md`.
+* Documented the Two-Branch Maintainer Workflow and 4-Step Fork & Install Quickstart in `README.md`.
 
 ## Blockers / Failing Checks
-* None. Pre-commit (`--all`), link auditing (46 documents, 61 links), and all script `--help` checks pass with exit code 0.
+* None. Ready for complete verification.
 
 ## Next Concrete Action
-* Stage and commit changes (`git add .`), or test multi-repo syncing against linked project environments.
+* Run `make validate`, `make test`, and `make package` to assert governance and link integrity.
 
 ## Modified Files
-* `rules/git-conventions.md`, `rules/python-standards.md`
-* `skills/scaffold-domain/SKILL.md`, `skills/promote-memory/SKILL.md`
-* `skills/python-packaging-and-cli/SKILL.md`, `skills/docker-and-reproducibility/SKILL.md`
-* `agents/manuscript-reviewer.md`
-* `scripts/unlink-repo.sh`, `scripts/sync-all-repos.sh`, `scripts/link-repo.sh`
-* `mcp.json.template`, `.gitignore`, `.githooks/pre-commit`
-* `.github/workflows/validate-agents.yml`, `scripts/README.md`, `README.md`
-* `state/handoff.md`
+* `memory/*.template.md`, `memory/archive/.gitkeep`, `.gitignore`, `apm.yml`, `scripts/link-repo.sh`, `skills/synapse-init/SKILL.md`, `skills/promote-memory/SKILL.md`, `skills/scaffold/SKILL.md`, `agents/architect.md`, `memory/README.md`, `context/repo-governance-spec.md`, `README.md`, `state/handoff.md`

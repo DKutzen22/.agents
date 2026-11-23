@@ -46,7 +46,6 @@ test: validate
 	@./scripts/link-repo.sh --help > /dev/null
 	@./scripts/unlink-repo.sh --help > /dev/null
 	@./scripts/sync-all-repos.sh --help > /dev/null
-	@python3 scripts/validate-gbk-sqlite.py --help > /dev/null
 	@python3 scripts/check-links.py --help > /dev/null
 	@python3 scripts/hook-handler.py --help > /dev/null
 	@echo "✓ All test suites and CLI interfaces verified."

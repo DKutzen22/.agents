@@ -1,20 +1,104 @@
-# Synapse — Centralized Multi-Agent Engineering Framework
+# Synapse — Centralized Memory & State Continuity Framework
 
-Standardized rules, skills, subagents, technical specifications, and zero-dependency scripts for AI-assisted development across three specialized bioinformatics stacks:
-
-| Track | Core Technologies | Primary Use Cases |
-|---|---|---|
-| **Phage Bioinformatics Pipelines** | Python, Snakemake, Conda, SLURM | Automated phage genome annotation (**Pharokka**, **Phold**, **Phynteny**) & comparative genomics |
-| **Annotation Database Apps** | R packages, Shiny modules, SQLite, DBI | Parsing, storing, filtering, and exporting GenBank (`.gbk`) and PHROG annotations |
-| **Technical Publishing & Sites** | Quarto, Markdown, knitr | Reproducible research reports, documentation sites, and automated link/asset validation |
+A standardized, multi-agent memory framework providing persistent context, session continuity, empirical knowledge tracking, and execution guardrails for AI coding assistants (Google Antigravity, Claude Code, Cursor, Codex, Gemini CLI).
 
 ---
 
 ## What is Synapse?
 
-Synapse acts as a **centralized brain** for agentic AI coding assistants (Google Antigravity, Claude Code, Cursor, Codex). Instead of repeatedly writing AI rules, database schemas, and prompt instructions inside every separate phage pipeline, R package, or Quarto project, you mount Synapse into your active projects. 
+Synapse acts as a **centralized brain and memory architecture** for agentic AI coding assistants. Instead of repeatedly writing AI rules, state templates, and prompt instructions inside every separate project, you mount Synapse into your active repositories (via APM or local symlinks).
 
-Any AI agent working in a mounted repository automatically adopts your coding standards, obeys database schemas, avoids known bioinformatics edge cases, and provides standardized slash workflows (`/resume`, `/handoff`, `/janitor`).
+Any AI agent working in a mounted repository automatically adopts:
+- **Session Continuity:** Standardized state restoration (`/resume`) and closure (`/handoff`) preventing context loss between sessions.
+- **Empirical Memory:** Append-only recording of tool quirks and architectural decisions via starter templates and automated hydration.
+- **Context Governance:** Declarative specification management and token discipline (≤50 line handoff caps, ≤60 line rules).
+- **Workspace State Isolation:** Distinct separation between immutable package rules and mutable project memory (`.synapse/`).
+
+---
+
+## Fork & Install Architecture
+
+Synapse is designed for a **fork-ready core vs. personal overlay** distribution model. Users fork `main`, install their own fork via APM or local symlinks, and seamlessly pull upstream framework updates without inheriting personal memories or suffering merge conflicts.
+
+### The Two-Branch Maintainer Workflow
+
+```text
+upstream/main (Public Framework Core)
+     │
+     ▼ (git pull upstream main)
+  main (Your Fork's Framework Core) ───► Clean templates (*.template.md), no personal memory
+     │
+     ▼ (git merge main)
+personal (Your Personal Overlay Branch) ──► Tracks private user-profile.md, anti-patterns.md, & custom skills
+```
+
+1. **`main` Branch (Public Framework Core):**
+   - Keeps clean starter templates (`memory/*.template.md`), core skills, rules, and governance scripts.
+   - Hydrated memory files (`memory/*.md`) are untracked so upstream pulls remain 100% clean and conflict-free.
+   - Any generic improvements can be contributed back upstream via pull request.
+
+2. **`personal` Branch (Private Daily-Driver Overlay):**
+   - Created off `main` to store your personal cross-project developer habits (`memory/user-profile.md`), negative constraints (`memory/anti-patterns.md`), and custom skills tagged with `scope: personal`.
+   - Merging framework updates from `main` into `personal` never produces merge conflicts on memory or personal preferences.
+
+---
+
+### 4-Step Fork & Install Quickstart
+
+#### Step 1: Fork the Upstream Repository (GitHub Web or CLI)
+* **[Terminal / Web]**: Fork `https://github.com/dkutzen22/synapse` to your GitHub account (e.g. `https://github.com/<your-username>/synapse`) via the GitHub UI or CLI:
+  ```bash
+  gh repo fork dkutzen22/synapse --clone=false
+  ```
+
+#### Step 2: Clone & Initialize Your Central Fork
+1. **[Terminal Shell]** Clone your fork locally and configure Git hooks:
+   ```bash
+   git clone https://github.com/<your-username>/synapse.git ~/.synapse-central
+   cd ~/.synapse-central
+   git config core.hooksPath .githooks
+   ```
+2. **[Agent Chat Command]** Open `~/.synapse-central` in your AI coding assistant (Google Antigravity, Claude Code, Cursor) and trigger the initialization slash command in the chat input:
+   ```text
+   /synapse-init
+   ```
+   *What this does:* The agent auto-detects your fork's GitHub origin URL, configures `apm.yml` (`namespace: <your-username>`), and hydrates starter templates (`*.template.md` $\rightarrow$ `*.md`).
+
+#### Step 3: Create Your Personal Overlay Branch
+1. **[Terminal Shell]** Create and switch to your private overlay branch:
+   ```bash
+   cd ~/.synapse-central
+   git checkout -b personal
+   ```
+2. **[Editor / Agent]** Customize your durable developer habits in [`memory/user-profile.md`](memory/user-profile.template.md) and rejected behaviors in [`memory/anti-patterns.md`](memory/anti-patterns.template.md).
+3. **[Terminal Shell]** Commit your personal memory overlay:
+   ```bash
+   git add memory/
+   git commit -m "feat: initialize personal memory overlay"
+   ```
+
+#### Step 4: Install into Consumer Projects
+Choose either APM installation or local symlink mounting:
+
+* **Option A: Install via APM [Terminal Shell]**
+  In any consumer project repository where you want to use Synapse:
+  ```bash
+  apm install github:<your-username>/synapse
+  ```
+  Then in your agent chat inside that consumer project, run **[Agent Chat Command]**:
+  ```text
+  /synapse-init
+  ```
+  *(Scaffolds local `.synapse/state.json`, `.synapse/context.md`, and local `.synapse/memory/`).*
+
+* **Option B: Mount Locally via Symlinks [Terminal Shell]**
+  ```bash
+  ~/.synapse-central/scripts/link-repo.sh ~/projects/my-project
+  ```
+  Then in your agent chat inside that consumer project, run **[Agent Chat Command]**:
+  ```text
+  /resume
+  ```
 
 ---
 
@@ -22,9 +106,9 @@ Any AI agent working in a mounted repository automatically adopts your coding st
 
 This repository is distributed for public, team, and multi-agent usage via APM (Agent Package Manager), GitHub Releases, and direct repository linking:
 
-### Option 1: Install via APM (Recommended for Teams & Multi-Tool Environments)
+### Option 1: Install via APM (Recommended)
 
-Using Microsoft's **APM (Agent Package Manager)**, you can install Synapse into any repository and compile configurations directly to your target harnesses (Claude Code, Cursor, GitHub Copilot):
+Using **APM (Agent Package Manager)**, you can install Synapse into any repository and compile configurations directly to your target harnesses (Claude Code, Cursor, GitHub Copilot, Antigravity):
 
 ```bash
 # Install directly from GitHub into your active project:
@@ -38,7 +122,7 @@ To declare Synapse as a versioned dependency in your consumer project's `apm.yml
 
 ```yaml
 # In your target project's apm.yml
-name: my-phage-project
+name: my-project
 version: 0.1.0
 
 targets:
@@ -72,7 +156,6 @@ When installing Synapse via APM:
 3. **Initialize Mutable Project State (`/synapse-init`):**
    To keep your project's working memory separate from the immutable package cache, initialize local project state on first run:
    ```bash
-   # Run the initialization command in your agent chat:
    /synapse-init
    ```
    This scaffolds the `.synapse/` workspace directory:
@@ -87,13 +170,12 @@ When installing Synapse via APM:
 Every release published via GitHub Actions attaches a standardized `.zip` distribution bundle and SHA-256 checksum:
 
 ```bash
-# Download and install pre-built release package
 apm install https://github.com/dkutzen22/synapse/releases/download/v1.1.0/synapse-v1.1.0.zip
 ```
 
-### Option 3: Local Monorepo & HPC Symlink Mount
+### Option 3: Local Monorepo & Symlink Mount
 
-For local multi-repo development or offline HPC clusters without APM:
+For local multi-repo development without APM:
 
 ```bash
 # 1. Clone this repository centrally (if not already local)
@@ -103,7 +185,7 @@ git clone https://github.com/DKutzen22/synapse.git ~/.synapse-central
 cd ~/.synapse-central
 git config core.hooksPath .githooks
 
-# 3. Mount into your target bioinformatics or R project repository
+# 3. Mount into your target project repository
 ./scripts/link-repo.sh ~/projects/<my-project>
 
 # 4. Open your project in your IDE or CLI and invoke:
@@ -121,11 +203,11 @@ These commands live as unified skills in `skills/<name>/SKILL.md` and autocomple
 | **`/synapse-init`** | Workspace State Init | Run once after `apm install` to scaffold local mutable `.synapse/` state, context, and memory. |
 | **`/resume`** | Session Continuity | Run at the start of every session to review current blockers, modified files, and queued next actions. |
 | **`/handoff`** | Session Closure | Run before ending a work session to cleanly package progress into `state/handoff.md` and update milestones. |
+| **`/doctor`** | Repo Health & Symlink Audit | Audits relative symlinks, Git hooks, distribution checksums, and manifest schemas. |
+| **`/harvest`** | Runtime Knowledge Extraction | Extracts runtime debugging lessons, tool quirks, and ADRs for the `synthesist` subagent. |
+| **`/scaffold`** | Primitive Generation | Materializes new skills, rules, or subagents conforming to governance specs for the `architect`. |
+| **`/promote-memory`** | Empirical Memory Harvesting | Run periodically to harvest project quirks and decisions into central memory. |
 | **`/janitor`** | Repo Governance Audit | Audits frontmatter, checks line limits, validates internal links, and verifies repo health. |
-| **`/check-r-pkg`** | R Package Quality Gate | Runs `devtools::document()`, `devtools::test()`, and `rcmdcheck::rcmdcheck()` with error triaging. |
-| **`/smoke-test-pipeline`** | Snakemake Validation | Performs dry-runs (`snakemake -n -p`), lints rules, and executes minimal phage test fixtures. |
-| **`/audit-schema-sync`** | Schema Drift Audit | Cross-checks SQLite DDL against R/Python parser outputs and Shiny queries to catch column drift. |
-| **`/verify-site-links`** | Link & Asset Audit | Renders Quarto sites and verifies that all relative Markdown/HTML links and image assets resolve on disk. |
 
 ---
 
@@ -136,12 +218,11 @@ The repository is organized into canonical primitives conforming to APM and Anti
 ```text
 synapse/
 ├── instructions/ # APM *.instructions.md guardrails auto-triggered by applyTo / globs
-├── prompts/      # APM *.prompt.md parameter-driven workflows & slash commands
 ├── skills/       # Modular skills (<skill-name>/SKILL.md) for Antigravity & Agent Skills
 ├── agents/       # Isolated subagent definitions with restricted tool grants
-├── context/      # Canonical reference specifications (DDL schemas, format lookups, HPC tiers)
+├── context/      # Canonical reference specifications & governance contracts
 ├── memory/       # Central append-only scar tissue, tool quirks, and ADRs
-├── state/        # Ephemeral working memory templates
+├── state/        # Ephemeral working memory templates (handoff, active-roadmap)
 ├── scripts/      # Zero-dependency utilities (POSIX sh, Python 3 stdlib)
 ├── apm.yml       # APM package manifest declaring targets, primitives, and entrypoints
 ├── hooks.json    # Native lifecycle hooks (PreToolUse/PostToolUse governance)
@@ -150,59 +231,51 @@ synapse/
 └── agents.json   # Antigravity subagent discovery manifest
 ```
 
-### 1. `instructions/` (Always-On Guardrails & Instructions)
+### 1. `instructions/` (Always-On Memory & Governance Guardrails)
 *Maintainer Guide: [`instructions/README.md`](instructions/README.md) | Trigger: Automatic via `applyTo` / `globs`*
-* **[`guardrails.instructions.md`](instructions/guardrails.instructions.md):** Bans hardcoded absolute paths and accession IDs; enforces random seeds; mandates defensive parsing for `.gbk`, `.gff3`, and `.fasta`; bans hardcoded `NCBI_API_KEY` tokens and HPC cluster user scratch paths (`/scratch/<user>`, `/lustre/...`).
-* **[`r-package-standards.instructions.md`](instructions/r-package-standards.instructions.md):** Enforces explicit `pkg::fun()` namespacing (zero `library()` calls in `R/`), `roxygen2` documentation on exported functions, `testthat` 3rd edition, and `styler`/`lintr` compliance.
-* **[`shiny-and-sqlite.instructions.md`](instructions/shiny-and-sqlite.instructions.md):** Enforces Shiny module `NS(id)` isolation, parameterized queries (`DBI::dbBind` / `glue::glue_sql`), and physical separation of pure database query functions from reactive observers.
-* **[`snakemake-conventions.instructions.md`](instructions/snakemake-conventions.instructions.md):** Enforces per-rule `conda:`/`container:` directives with pinned package versions, `log:` and `benchmark:` paths, `temp()` intermediate management, and SLURM-ready `resources:` tiers.
-* **[`memory-protocol.instructions.md`](instructions/memory-protocol.instructions.md):** Mandates consulting schemas in `context/` and quirks in `memory/` before modifying database access or parsers.
-* **[`state-continuity.instructions.md`](instructions/state-continuity.instructions.md):** Checks `.synapse/state.json` / `.synapse/handoff.md` before initiating multi-file edits or architecture plans.
-* **[`synapse-governance.instructions.md`](instructions/synapse-governance.instructions.md):** Enforces lifecycle contracts, line limits (≤60 lines), and token discipline across all Synapse components.
-* **[`git-conventions.instructions.md`](instructions/git-conventions.instructions.md):** Enforces Conventional Commits (`feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`), atomic changesets, descriptive PR summaries, and bans raw data files (>10MB).
-* **[`python-standards.instructions.md`](instructions/python-standards.instructions.md):** Enforces modern Python packaging (`src/` layout, `pyproject.toml`), explicit type annotations, `pytest` unit suites, `ruff` linting, `pathlib.Path`, and deterministic seeds.
+* **[`memory-protocol.instructions.md`](instructions/memory-protocol.instructions.md):** Mandates consulting schemas in `context/` and quirks in `memory/` before modifying database access, contracts, or core interfaces.
+* **[`memory-discipline.instructions.md`](instructions/memory-discipline.instructions.md):** Enforces append-only writes, duplicate prevention, and structured schemas across all memory files.
+* **[`state-continuity.instructions.md`](instructions/state-continuity.instructions.md):** Checks `.synapse/state.json` / `.synapse/handoff.md` before initiating multi-file edits or architecture plans to prevent context loss.
+* **[`synapse-governance.instructions.md`](instructions/synapse-governance.instructions.md):** Enforces lifecycle contracts, line limits (≤60 lines for rules, ≤50 lines for handoffs), and token discipline across all Synapse components.
+* **[`subagent-autonomy.instructions.md`](instructions/subagent-autonomy.instructions.md):** Advisory constraints and governance bounds for generative subagents materializing primitives.
+* **[`portable-path.instructions.md`](instructions/portable-path.instructions.md):** Enforces relative-path portability and bans machine-specific absolute paths.
 
-### 2. `skills/` (Domain Playbooks & Workflows)
+### 2. `skills/` (Session Workflows & Runbooks)
 *Maintainer Guide: [`skills/README.md`](skills/README.md) | Trigger: Intent match or explicit `/<name>`*
-* **Domain Playbooks:**
-  - **[`scaffold-domain`](skills/scaffold-domain/SKILL.md):** Guided workflow for expanding Synapse safely with new languages, tools, rules, and context specifications.
-  - **[`promote-memory`](skills/promote-memory/SKILL.md):** Periodic harvesting protocol for promoting empirical project quirks and decisions into central memory or rules.
-  - **[`python-packaging-and-cli`](skills/python-packaging-and-cli/SKILL.md):** Modern `src/` layout packaging, `pyproject.toml` metadata, `argparse`/`typer` CLI entrypoints, and `pytest` suites.
-  - **[`docker-and-reproducibility`](skills/docker-and-reproducibility/SKILL.md):** Multi-stage Dockerfiles, Apptainer/Singularity `.def` recipes for SLURM/HPC, and pinned lockfile environments.
-  - **[`phage-annotation-parsers`](skills/phage-annotation-parsers/SKILL.md):** Output structures and qualifier mapping for **Pharokka**, **Phold**, and **Phynteny**, handling circular genomes, overlapping ORFs, and PHROG categories.
-  - **[`snakemake-dryrun-and-dag`](skills/snakemake-dryrun-and-dag/SKILL.md):** Validation checklist, DAG/rulegraph SVG generation, and minimal phage test fixture design (`.test/data/`).
-  - **[`r-pkg-ci-and-release`](skills/r-pkg-ci-and-release/SKILL.md):** Local R package verification cycle, semantic version bump protocols, and GitHub Actions `R-CMD-check` diagnostics.
-  - **[`quarto-technical-publishing`](skills/quarto-technical-publishing/SKILL.md):** YAML frontmatter conventions, reproducible chunk caching (`freeze: auto`), and relative asset link validation.
-* **Callable Slash Workflows:** Houses the 7 executable workflows listed in the cheat sheet (`janitor`, `resume`, `handoff`, `check-r-pkg`, `smoke-test-pipeline`, `audit-schema-sync`, `verify-site-links`).
+* **[`doctor`](skills/doctor/SKILL.md):** Audits repository health, relative mount symlinks, Git hooks, distribution checksums, and manifest schemas.
+* **[`handoff`](skills/handoff/SKILL.md):** Concludes work sessions by overwriting `handoff.md` (under 50 lines), updating roadmaps, and prompting to record empirical quirks.
+* **[`harvest`](skills/harvest/SKILL.md):** Extracts runtime debugging lessons, tool quirks, and architectural decisions from session logs for the synthesist.
+* **[`janitor`](skills/janitor/SKILL.md):** Audits frontmatter, checks line limits, validates internal links, and verifies state/memory hygiene.
+* **[`promote-memory`](skills/promote-memory/SKILL.md):** Periodic harvesting protocol for promoting empirical project quirks and decisions into central memory or rules.
+* **[`resume`](skills/resume/SKILL.md):** Restores session briefing from `handoff.md` and `git status -sb`, outputting a 5-bullet summary and awaiting confirmation before changes.
+* **[`scaffold`](skills/scaffold/SKILL.md):** Materializes new skills, instructions, or subagents based on observed workflow patterns for the architect.
+* **[`synapse-init`](skills/synapse-init/SKILL.md):** Scaffolds local mutable project memory (`.synapse/state.json`, `handoff.md`, `context.md`, `memory/`).
 
 ### 3. `agents/` (Isolated Subagents)
 *Maintainer Guide: [`agents/README.md`](agents/README.md) | Trigger: Agent orchestration via `invoke_subagent`*
-* **[`bioinfo-pipeline-reviewer`](agents/bioinfo-pipeline-reviewer.md):** Specialist code reviewer evaluating Snakemake rules, Python scripts, wildcard ambiguity, and phage-specific biological edge cases.
-* **[`shiny-ui-tester`](agents/shiny-ui-tester.md):** Automated headless UI test runner via `shinytest2` / `chromote` testing `.gbk` uploads, table filtering, and CSV/TSV exports.
-* **[`docs-and-vigilance-agent`](agents/docs-and-vigilance-agent.md):** Synchronizes `roxygen2` docs, `README.md`, `NEWS.md`, and Quarto vignettes after API or schema changes.
-* **[`ci-failure-triager`](agents/ci-failure-triager.md):** Parses failing GitHub Actions logs (R, Snakemake, Conda, Quarto) to isolate root causes and propose minimal diffs.
-* **[`manuscript-reviewer`](agents/manuscript-reviewer.md):** Specialized scientific editorial reviewer auditing computational reproducibility claims, figure captions, statistical precision, and terminology without altering code logic.
+* **[`architect.md`](agents/architect.md):** Generates new skills, rules, and agents from recurring runtime patterns and bottlenecks.
+* **[`synthesist.md`](agents/synthesist.md):** Harvests empirical debugging lessons, tool quirks, and architectural decisions into `memory/`.
+* **[`janitor.md`](agents/janitor.md):** Audits repository governance, frontmatter validity, line limits, and file hygiene.
+* **[`scout.md`](agents/scout.md):** Manages consumer repository mount points, relative symlink integrity, and fleet synchronization.
+* **[`explorer.md`](agents/explorer.md):** Read-only codebase reconnaissance, architecture mapping, and dependency exploration.
+* **[`verifier.md`](agents/verifier.md):** Adversarial test runner, post-change diff auditor, and quality gate verifier.
 
 ### 4. `context/` (Passive Reference Specifications)
 *Maintainer Guide: [`context/README.md`](context/README.md) | Access Mode: Read-only reference data (Nouns)*
-* **[`sqlite-phage-schema.sql`](context/sqlite-phage-schema.sql):** Canonical DDL schema (`PRAGMA foreign_keys = ON;`) defining `genomes`, `features`, `annotations`, and pre-seeded `phrog_categories` lookup table with hex colors.
-* **[`genbank-and-phrog-specs.md`](context/genbank-and-phrog-specs.md):** Mappings between INSDC qualifiers, upstream tool TSV columns, circular `join(...)` wrap-around coordinates, and genetic code table 11.
-* **[`hpc-and-env-profiles.md`](context/hpc-and-env-profiles.md):** Standard Snakemake `resources:` tiers (`light_io`, `cpu_annotation`, `gpu_structure_fold`, `comparative_genomics`) with concrete thread, memory, and runtime defaults.
-* **[`repo-governance-spec.md`](context/repo-governance-spec.md):** Formal structural specifications, folder contracts, and symlink topology rules.
+* **[`repo-governance-spec.md`](context/repo-governance-spec.md):** Formal structural specifications, folder contracts, lifecycle rules, and symlink topology.
+* **[`index.md`](context/index.md):** Master index of reference specifications.
 
 ### 5. `memory/` (Empirical Scar Tissue & ADRs)
 *Maintainer Guide: [`memory/README.md`](memory/README.md) | Access Mode: Append-only*
-* **[`architecture-decisions.md`](memory/architecture-decisions.md):** Permanent ledger of Architectural Decision Records:
-  - `ADR-001`: SQLite as canonical interchange format between pipelines and Shiny.
-  - `ADR-002`: Strict physical separation of pure `DBI` query helpers from Shiny reactives.
-  - `ADR-003`: Three-tier Snakemake validation via minimal phage fixtures before HPC runs.
-  - `ADR-004`: Consolidation of workflow commands into `skills/` with portability symlinks.
-* **[`bioinfo-tool-quirks.md`](memory/bioinfo-tool-quirks.md):** Real-world edge cases (GenBank multiline product wrapping, Pharokka `"No_PHROG"` sentinels, RSQLite integer `0`/`1` boolean coercion, database locks).
+* **[`architecture-decisions.template.md`](memory/architecture-decisions.template.md):** Clean starter template for Architectural Decision Records (`ADR-001` through `ADR-NNN`).
+* **[`tool-quirks.template.md`](memory/tool-quirks.template.md):** Clean starter template for categorized empirical failure modes, version discrepancies, and defensive workarounds.
+* **[`user-profile.template.md`](memory/user-profile.template.md):** Clean starter template for durable cross-project developer preferences.
+* **[`anti-patterns.template.md`](memory/anti-patterns.template.md):** Clean starter template for rejected agent habits and negative examples.
 
 ### 6. `state/` (Ephemeral Working Memory)
 *Maintainer Guide: [`state/README.md`](state/README.md) | Access Mode: Overwrite-only / Repo-local*
 * **[`handoff.md`](state/handoff.md):** Fixed 6-section template capturing current objective, blockers, next action, and modified files (hard cap of 50 lines).
-* **[`active-roadmap.md`](state/active-roadmap.md):** Lightweight `[ ]` / `[x]` milestone tracker across bioinformatics pipelines, R/Shiny, and Quarto publishing.
+* **[`active-roadmap.md`](state/active-roadmap.md):** Lightweight milestone checklist tracker.
 
 ### 7. `scripts/` (Zero-Dependency CLI Utilities)
 *Maintainer Guide: [`scripts/README.md`](scripts/README.md) | Standard: POSIX `sh` or Python 3 stdlib only*
@@ -210,7 +283,6 @@ synapse/
 * **[`unlink-repo.sh`](scripts/unlink-repo.sh):** Clean teardown utility removing shared symlinks and `.git/info/exclude` blocks while preserving repo-local state, memory, and local-rules.
 * **[`sync-all-repos.sh`](scripts/sync-all-repos.sh):** Fleet management script auditing (`--check`) or updating (`--refresh`) all registered consumer repositories listed in `${XDG_CONFIG_HOME:-$HOME/.config}/agents/linked-repos.txt`.
 * **[`hook-handler.py`](scripts/hook-handler.py):** Antigravity lifecycle hook runner enforcing real-time spec protection (`PreToolUse`), handoff line caps, and script syntax verification (`PostToolUse`).
-* **[`validate-gbk-sqlite.py`](scripts/validate-gbk-sqlite.py):** Verifies SQLite databases against canonical DDL, checking foreign keys, column presence, and sentinels.
 * **[`check-links.py`](scripts/check-links.py):** Scans Markdown and HTML files to verify that all relative local links and image assets exist on disk.
 * **[`package-synapse.sh`](scripts/package-synapse.sh):** Cleans caches, asserts `apm.yml` schema, and builds `.zip` release distribution.
 
@@ -218,20 +290,19 @@ synapse/
 
 ## Mounting Synapse into Target Repositories
 
-To standardize AI workflows across your phage bioinformatics pipelines, R packages, or Quarto publishing sites, run [`scripts/link-repo.sh`](scripts/link-repo.sh) to mount Synapse:
+To standardize AI memory and state tracking across your repositories, run [`scripts/link-repo.sh`](scripts/link-repo.sh) to mount Synapse:
 
 ```bash
 ./scripts/link-repo.sh /path/to/target-repo
 ```
 
 ### What `link-repo.sh` Does:
-1. **Dynamic Relative Symlinks:** Computes the relative offset from `<target>/.agents` back to the central repository and creates strictly relative symlinks for `rules`, `skills`, `agents`, `context`, `scripts`, `hooks.json`, and discovery manifests (`rules.json`, `skills.json`, `agents.json`). Zero hardcoded absolute paths.
+1. **Dynamic Relative Symlinks:** Computes the relative offset from `<target>/.agents` back to the central repository and creates strictly relative symlinks for `instructions`, `skills`, `agents`, `context`, `scripts`, `hooks.json`, and discovery manifests (`rules.json`, `skills.json`, `agents.json`, `apm.yml`). Zero hardcoded absolute paths.
 2. **Clean Git Exclusion (`.git/info/exclude`):** Idempotently appends all global symlinks to the target's `.git/info/exclude`, ensuring mount artifacts never pollute `<target>`'s git status or commit history.
-3. **Commands Portability Symlink:** Generates `<target>/.agents/commands -> skills` so CLI tools expecting a `commands/` directory resolve all workflow skills.
-4. **Local Rules Directory (`local-rules/`):** Initializes `.agents/local-rules/` for project-specific rules, which are tracked in target git and guaranteed to survive `link-repo.sh --force`.
+3. **Local Rules Directory (`local-rules/`):** Initializes `.agents/local-rules/` for project-specific rules, which are tracked in target git and guaranteed to survive `link-repo.sh --force`.
 5. **Initializes Local State & Memory:** Copies clean starter templates for `state/handoff.md`, `state/active-roadmap.md`, `memory/project-decisions.md`, and `memory/project-quirks.md`.
 6. **Generates Root IDE Entrypoints:** Creates lightweight pointer files (`GEMINI.md` and `CLAUDE.md`) in `<target>/` instructing any agent to follow `.agents` rules and local rules.
-7. **Optional Standalone CI Scripts (`--ci-copy`):** Copies `validate-gbk-sqlite.py` and `check-links.py` into `<target>/.github/scripts/` so GitHub Actions workflows run independently of local symlinks.
+7. **Optional Standalone CI Scripts (`--ci-copy`):** Copies `check-links.py` into `<target>/.github/scripts/` so GitHub Actions workflows run independently of local symlinks.
 8. **Updates Gitignore:** Appends `.agents/state/*.tmp.md` and scratch patterns to the target repo's `.gitignore`.
 
 ---
@@ -248,10 +319,10 @@ git config core.hooksPath .githooks
 ### Automated Pre-Commit Checks:
 1. **Handoff Line Cap:** Fails if `state/handoff.md` exceeds 50 lines.
 2. **Skills Hierarchy:** Blocks loose `.md` files in `skills/` root; verifies YAML frontmatter on all `SKILL.md` files.
-3. **Rules Frontmatter & Size:** Enforces `globs:` in frontmatter and a ≤60 line limit on new rules.
+3. **Rules Frontmatter & Size:** Enforces `globs:` in frontmatter and a ≤60 line limit on rules.
 4. **Context Declarative Tone:** Scans `context/*.md` to ban imperative agent instructions (`You must`, `Always run`, `Step 1:`).
 5. **Context Protection:** Guards against accidental specification changes unless tagged with `[spec-update]` or bypassed via `--no-verify`.
-6. **Secret & HPC Path Scan:** Blocks commits containing hardcoded `NCBI_API_KEY` assignments, private SSH keys, or cluster scratch paths (`/scratch/<user>`, `/lustre/...`).
+6. **Secret & Scratch Path Scan:** Blocks commits containing hardcoded private keys or cluster scratch paths.
 7. **Scripts Contract:** Verifies files in `scripts/` are executable and pass `sh -n` or `python3 -m py_compile`.
 8. **Commands Drift:** Blocks stray files from being added to a top-level `commands/` directory in the central repo.
 9. **Absolute Path Scanner:** Flags machine-specific absolute paths (`/Users/`, `/home/`, `C:\`) across staged changes to ensure multi-repo portability.
@@ -294,39 +365,3 @@ This repository provides reproducible build scripts and continuous integration f
 * **Line Ending Governance (`.gitattributes`):** Normalizes all text files to LF line endings (`eol=lf`) and marks binary/archive formats explicitly.
 * **Build Command (`make package`):** Cleans transient caches and calls [`scripts/package-synapse.sh`](scripts/package-synapse.sh) to assemble `dist/synapse-v<version>.zip` and calculate its SHA-256 checksum.
 * **Tag-Triggered CI/CD ([`.github/workflows/release.yml`](.github/workflows/release.yml)):** Automatically runs on semantic git tags (`v*.*.*`), validates `apm.yml`, executes pre-commit governance, compiles the distribution zip, and publishes a GitHub Release.
-
----
-
-## Frontmatter Quick Reference
-
-Every `rules/*.md` file uses:
-```yaml
----
-trigger: glob
-globs: "workflow/**/*.smk, config/*.yaml"
-description: "Concise purpose statement"
----
-```
-
-Every `skills/<name>/SKILL.md` uses:
-```yaml
----
-name: workflow-name
-description: >
-  Concise purpose. Trigger with /workflow-name or ask to run check.
----
-```
-
-Every `agents/*.md` uses:
-```yaml
----
-name: agent-name
-description: "Specialized review persona"
-subagent: true
-mainAgent: false
-model: "pro"  # "pro", "flash", or "flash_lite"
-tools:
-  - read_file
-  - run_command
----
-```

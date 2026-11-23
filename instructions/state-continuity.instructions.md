@@ -2,8 +2,8 @@
 description: >
   Enforces session continuity: requires checking state.json/handoff.md before
   initiating multi-file changes or architecture modifications.
-applyTo: "**/R/**, **/workflow/**, **/src/**"
-globs: "**/R/**, **/workflow/**, **/src/**"
+applyTo: "src/**, lib/**, pkg/**, app/**, cmd/**, scripts/**, test/**, tests/**"
+globs: "src/**, lib/**, pkg/**, app/**, cmd/**, scripts/**, test/**, tests/**"
 ---
 
 # State Continuity & Handoff Awareness

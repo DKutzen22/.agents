@@ -21,9 +21,9 @@ Before creating or modifying any file in Synapse, consult `context/repo-governan
 
 3. **Memory Discipline (Append-Only):**
    - Do NOT bloat global instructions with single-project quirks or one-off workarounds.
-   - Record tool findings in `memory/bioinfo-tool-quirks.md` and major architecture choices in `memory/architecture-decisions.md`.
+   - Record tool findings in `memory/tool-quirks.md` and major architecture choices in `memory/architecture-decisions.md`.
 
 4. **Skills & Prompts Structure:**
    - Slash workflows and prompts live in `prompts/*.prompt.md`.
-   - Reusable domain playbooks reside in `skills/<kebab-name>/SKILL.md`.
+   - Reusable workflows and playbooks reside in `skills/<kebab-name>/SKILL.md`.
    - Scripts in `scripts/` must be executable (`chmod +x`), implement `--help`, and require zero external dependencies.

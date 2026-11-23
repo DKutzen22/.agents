@@ -21,16 +21,18 @@ Options:
   -h, --help          Show this help message and exit
 
 Symlink Topology Created:
-  <target>/.agents/rules       -> <rel-path-to-central>/rules
-  <target>/.agents/skills      -> <rel-path-to-central>/skills
-  <target>/.agents/agents      -> <rel-path-to-central>/agents
-  <target>/.agents/context     -> <rel-path-to-central>/context
-  <target>/.agents/scripts     -> <rel-path-to-central>/scripts
-  <target>/.agents/hooks.json  -> <rel-path-to-central>/hooks.json
-  <target>/.agents/rules.json  -> <rel-path-to-central>/rules.json
-  <target>/.agents/skills.json -> <rel-path-to-central>/skills.json
-  <target>/.agents/agents.json -> <rel-path-to-central>/agents.json
-  <target>/.agents/commands    -> skills (relative portability symlink)
+  <target>/.agents/instructions -> <rel-path-to-central>/instructions
+  <target>/.agents/skills       -> <rel-path-to-central>/skills
+  <target>/.agents/agents       -> <rel-path-to-central>/agents
+  <target>/.agents/context      -> <rel-path-to-central>/context
+  <target>/.agents/scripts      -> <rel-path-to-central>/scripts
+  <target>/.agents/hooks.json   -> <rel-path-to-central>/hooks.json
+  <target>/.agents/rules.json   -> <rel-path-to-central>/rules.json
+  <target>/.agents/skills.json  -> <rel-path-to-central>/skills.json
+  <target>/.agents/agents.json  -> <rel-path-to-central>/agents.json
+  <target>/.agents/apm.yml      -> <rel-path-to-central>/apm.yml
+  <target>/.agents/memory/user-profile.md  -> <rel-path-to-central>/memory/user-profile.md
+  <target>/.agents/memory/anti-patterns.md -> <rel-path-to-central>/memory/anti-patterns.md
 
 Git Tracking Separation:
   - Global symlinks excluded via <target>/.git/info/exclude (never committed)
@@ -137,7 +139,7 @@ echo "    Target Repository: $TARGET_DIR"
 echo "    Relative Offset:   $REL_CENTRAL"
 
 # 3. Create relative symlinks for shared static directories
-SHARED_DIRS="instructions prompts skills agents context scripts"
+SHARED_DIRS="instructions skills agents context scripts"
 for dir in $SHARED_DIRS; do
     dest="$TARGET_AGENTS/$dir"
     rel_src="$REL_CENTRAL/$dir"
@@ -157,14 +159,6 @@ for dir in $SHARED_DIRS; do
     echo "  ✓ Linked $dir -> $rel_src"
 done
 
-# Create relative portability symlink: .agents/rules -> instructions
-RULES_LINK="$TARGET_AGENTS/rules"
-if [ -e "$RULES_LINK" ] || [ -L "$RULES_LINK" ]; then
-    rm -rf "$RULES_LINK"
-fi
-(cd "$TARGET_AGENTS" && ln -s "instructions" "rules")
-echo "  ✓ Created portability symlink rules -> instructions"
-
 # 4. Create relative symlinks for configuration manifests & hooks
 SHARED_CONFIGS="hooks.json rules.json skills.json agents.json apm.yml"
 for cfg in $SHARED_CONFIGS; do
@@ -178,14 +172,6 @@ for cfg in $SHARED_CONFIGS; do
         echo "  ✓ Linked $cfg -> $rel_src"
     fi
 done
-
-# 5. Create relative portability symlink: .agents/commands -> skills
-CMD_LINK="$TARGET_AGENTS/commands"
-if [ -e "$CMD_LINK" ] || [ -L "$CMD_LINK" ]; then
-    rm -rf "$CMD_LINK"
-fi
-(cd "$TARGET_AGENTS" && ln -s "skills" "commands")
-echo "  ✓ Created portability symlink commands -> skills"
 
 # 6. Initialize repo-local local-rules/ directory
 LOCAL_RULES="$TARGET_AGENTS/local-rules"
@@ -218,23 +204,57 @@ fi
 # 8. Initialize repo-local memory/ (protected against --force)
 LOCAL_MEMORY="$TARGET_AGENTS/memory"
 mkdir -p "$LOCAL_MEMORY"
+
+# 8a. Hydrate central memory files from starter templates if missing
+for tpl in "$CENTRAL_DIR/memory"/*.template.md; do
+    if [ -f "$tpl" ]; then
+        target_mf="$CENTRAL_DIR/memory/$(basename "$tpl" .template.md).md"
+        if [ ! -f "$target_mf" ]; then
+            cp "$tpl" "$target_mf"
+            echo "  ✓ Hydrated central memory/$(basename "$target_mf") from template"
+        fi
+    fi
+done
+
 if [ ! -f "$LOCAL_MEMORY/project-decisions.md" ]; then
-    cat << 'EOF' > "$LOCAL_MEMORY/project-decisions.md"
+    if [ -f "$CENTRAL_DIR/memory/architecture-decisions.template.md" ]; then
+        cp "$CENTRAL_DIR/memory/architecture-decisions.template.md" "$LOCAL_MEMORY/project-decisions.md"
+    else
+        cat << 'EOF' > "$LOCAL_MEMORY/project-decisions.md"
 # Project Architecture Decisions (Local ADRs)
 
 This ledger records architectural decisions specific to this repository.
 Format: ADR-001 (Status, Context, Decision, Consequences).
 EOF
+    fi
     echo "  ✓ Initialized repo-local memory/project-decisions.md"
 fi
 if [ ! -f "$LOCAL_MEMORY/project-quirks.md" ]; then
-    cat << 'EOF' > "$LOCAL_MEMORY/project-quirks.md"
+    if [ -f "$CENTRAL_DIR/memory/tool-quirks.template.md" ]; then
+        cp "$CENTRAL_DIR/memory/tool-quirks.template.md" "$LOCAL_MEMORY/project-quirks.md"
+    else
+        cat << 'EOF' > "$LOCAL_MEMORY/project-quirks.md"
 # Project Tool Quirks & Empirical Notes
 
 Log local dataset anomalies, non-standard tool versions, and repository-specific workarounds here.
 EOF
+    fi
     echo "  ✓ Initialized repo-local memory/project-quirks.md"
 fi
+
+# 8b. Link Tier 2 cross-project memory files (user-profile.md, anti-patterns.md)
+TIER2_MEMORY_FILES="user-profile.md anti-patterns.md"
+for mf in $TIER2_MEMORY_FILES; do
+    if [ -f "$CENTRAL_DIR/memory/$mf" ]; then
+        dest="$LOCAL_MEMORY/$mf"
+        rel_src=$(python3 -c 'import os.path, sys; print(os.path.relpath(sys.argv[1], sys.argv[2]))' "$CENTRAL_DIR/memory/$mf" "$LOCAL_MEMORY")
+        if [ -e "$dest" ] || [ -L "$dest" ]; then
+            rm -f "$dest"
+        fi
+        (cd "$LOCAL_MEMORY" && ln -s "$rel_src" "$mf")
+        echo "  ✓ Linked Tier 2 memory/$mf -> $rel_src"
+    fi
+done
 
 # 9. Clean Git Exclusion via .git/info/exclude (never commits global symlinks)
 GIT_DIR=$(git -C "$TARGET_DIR" rev-parse --git-dir)
@@ -251,7 +271,7 @@ if ! grep -q '# --- \.agents global symlinks ---' "$EXCLUDE_FILE"; then
     cat << 'EOF' >> "$EXCLUDE_FILE"
 
 # --- .agents global symlinks ---
-.agents/rules
+.agents/instructions
 .agents/skills
 .agents/agents
 .agents/context
@@ -260,7 +280,9 @@ if ! grep -q '# --- \.agents global symlinks ---' "$EXCLUDE_FILE"; then
 .agents/rules.json
 .agents/skills.json
 .agents/agents.json
-.agents/commands
+.agents/apm.yml
+.agents/memory/user-profile.md
+.agents/memory/anti-patterns.md
 EOF
     echo "  ✓ Configured mount exclusions in .git/info/exclude"
 fi
@@ -269,9 +291,8 @@ fi
 if [ "$CI_COPY" -eq 1 ]; then
     CI_SCRIPTS_DIR="$TARGET_DIR/.github/scripts"
     mkdir -p "$CI_SCRIPTS_DIR"
-    cp "$CENTRAL_DIR/scripts/validate-gbk-sqlite.py" "$CI_SCRIPTS_DIR/"
     cp "$CENTRAL_DIR/scripts/check-links.py" "$CI_SCRIPTS_DIR/"
-    chmod +x "$CI_SCRIPTS_DIR/validate-gbk-sqlite.py" "$CI_SCRIPTS_DIR/check-links.py"
+    chmod +x "$CI_SCRIPTS_DIR/check-links.py"
     echo "  ✓ Copied standalone CI scripts to .github/scripts/"
 fi
 
@@ -281,7 +302,7 @@ if [ "$GEN_ENTRYPOINTS" -eq 1 ]; then
         cat << 'EOF' > "$TARGET_DIR/GEMINI.md"
 # AI Agent Instructions
 
-- Standards: Read and obey all rules in `.agents/rules/` and project-specific rules in `.agents/local-rules/`.
+- Standards: Read and obey all rules in `.agents/instructions/` and project-specific rules in `.agents/local-rules/`.
 - Continuity: Check `@.agents/state/handoff.md` before making multi-file changes or architecture plans.
 - Schemas & Specs: Reference `@.agents/context/repo-governance-spec.md` and `.agents/context/` for canonical specifications.
 - Edge Cases: Check `.agents/memory/` and `.agents/state/` before modifying parsers or data contracts.
@@ -294,7 +315,7 @@ EOF
         cat << 'EOF' > "$TARGET_DIR/CLAUDE.md"
 # AI Agent Instructions
 
-- Standards: Read and obey all rules in `.agents/rules/` and project-specific rules in `.agents/local-rules/`.
+- Standards: Read and obey all rules in `.agents/instructions/` and project-specific rules in `.agents/local-rules/`.
 - Continuity: Check `@.agents/state/handoff.md` before making multi-file changes or architecture plans.
 - Schemas & Specs: Reference `@.agents/context/repo-governance-spec.md` and `.agents/context/` for canonical specifications.
 - Edge Cases: Check `.agents/memory/` and `.agents/state/` before modifying parsers or data contracts.

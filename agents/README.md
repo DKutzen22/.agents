@@ -3,17 +3,24 @@
 This directory defines isolated subagent configurations with domain-scoped personas
 and explicit tool permission allocations.
 
-## What Belongs Here vs. What Doesn't
-* **Belongs:** Specialized subagent roles (e.g. `bioinfo-pipeline-reviewer`, `shiny-ui-tester`, `docs-and-vigilance-agent`, `ci-failure-triager`) with targeted review checklists and strict tool constraints.
-* **Doesn't Belong:** Generic developer personas, unbounded script runners, or broad instructions without tool restrictions.
+## Active Subagents
+* [`architect.md`](./architect.md): Generates new skills, rules, and agents from runtime patterns.
+* [`synthesist.md`](./synthesist.md): Harvests empirical debugging lessons and ADRs into `memory/`.
+* [`janitor.md`](./janitor.md): Audits frontmatter, line caps, and repo hygiene.
+* [`scout.md`](./scout.md): Manages consumer repository mount points and symlink sync.
+* [`explorer.md`](./explorer.md): Read-only codebase reconnaissance and dependency mapping.
+* [`verifier.md`](./verifier.md): Adversarial test runner and post-change diff auditor.
 
 ## File Naming & Starter Template
-Agent files are named in `kebab-case.md` and define the subagent role.
+Agent files are named in `kebab-case.md` and define the subagent role (hard cap ≤80 lines).
 
 ```yaml
 ---
 name: my-specialist-reviewer
 description: Evaluates code changes for domain safety and edge cases
+subagent: true
+mainAgent: false
+model: "flash"
 tools:
   - read_file
   - run_command

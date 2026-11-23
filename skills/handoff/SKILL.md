@@ -45,11 +45,20 @@ If `.synapse/state.json` exists, update its `last_session`, `objective`, `curren
 - Mark completed milestones as `[x]`.
 - Add any newly uncovered sub-milestones if necessary.
 
-### 4. Check for Empirical Scar Tissue
-Ask the user / verify:
-> *"Were any non-obvious tool quirks (Pharokka/Phold/Phynteny/RSQLite/GenBank) or architectural decisions resolved this session that should be logged to `.synapse/memory/project-quirks.md` (or `.agents/memory/project-quirks.md`)?"*
+### 4. Process Passive Telemetry & Empirical Scar Tissue
+1. **Inspect Pattern Buffer:**
+   Check for `$REPO_ROOT/.synapse/state/pattern-buffer.jsonl` (or `.agents/state/pattern-buffer.jsonl` / `state/pattern-buffer.jsonl`).
+   If entries exist, group by type and signature with occurrence frequency $\ge 2$:
+   - **`recovery` events:** Surface pre-drafted `/harvest` candidates for empirical quirks (`tool-quirks.md` or `project-quirks.md`).
+   - **`repetition` events:** Surface pre-drafted `/scaffold` candidates for automation into skills or scoped rules.
+   Present candidates to the user for one-click/one-step approval.
+   Truncate or clear `pattern-buffer.jsonl` after evaluation.
 
-If yes, append the formatted entry directly.
+2. **Verify Manual Scar Tissue:**
+   Ask the user / verify:
+   > *"Were any non-obvious tool quirks, edge cases, or architectural decisions resolved this session that should be logged to `.synapse/memory/project-quirks.md` (or `.agents/memory/project-quirks.md`)?"*
+
+   If yes, append the formatted entry directly.
 
 ### 5. Report Completion
 Print a concise summary confirming local state was overwritten and the next session is primed.

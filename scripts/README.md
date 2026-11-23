@@ -9,7 +9,6 @@ utilities invoked by skills, automated workflows, and Git hooks.
   - Repository unlinking & mount teardown (`scripts/unlink-repo.sh`)
   - Multi-repo fleet synchronization & audit (`scripts/sync-all-repos.sh`)
   - Antigravity lifecycle hook runner (`scripts/hook-handler.py`)
-  - Database schema & sentinel verification (`scripts/validate-gbk-sqlite.py`)
   - Documentation & asset relative link auditing (`scripts/check-links.py`)
   - Synapse APM distribution packaging & archive generation (`scripts/package-synapse.sh`)
 * **Doesn't Belong:** Project-specific bioinformatics analysis pipelines, Snakemake execution logic, or Shiny server code (those belong in their respective consumer repositories).
